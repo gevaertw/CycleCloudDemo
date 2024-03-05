@@ -38,12 +38,24 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: cycleCloudSubnetName
         properties: {
           addressPrefix: cyclecloudSubnetPrefix
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.Storage'
+              locations: ['*']
+            }
+          ]
         }
       }
       {
         name: storageSubnetName
         properties: {
           addressPrefix: storageSubnetPrefix
+/*           serviceEndpoints: [
+            {
+              service: 'Microsoft.Storage'
+              locations: ['*']
+            }
+          ] */
         }
       }
       {
@@ -92,7 +104,7 @@ resource bastionPublicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   }
 }
 
-resource symbolicname 'Microsoft.Network/bastionHosts@2023-04-01' = {
+resource bastionHost 'Microsoft.Network/bastionHosts@2023-04-01' = {
   name: bastionHostName
   location: location
     sku: {

@@ -58,6 +58,21 @@
         },
         "HPCCluster04SubnetPrefix": {
             "value": "10.0.14.0/24"
+        },
+        "cycleCloudVMRGName": {
+            "value": "CycleCloudPOC-vm-rg"
+        },
+        "cycleCloudVMName": {
+            "value": "CycleCloudPOCCycle-vm"
+        },
+        "cycleCloudVMSize": {
+            "value": "Standard_D4s_v5"
+        },
+        "mgmtVMName": {
+            "value": "mgmtPOCCycle-vm"
+        },
+        "cycleCloudStorageAccountName": {
+            "value": "cyclesa8168ktxt436864"
         }
     }
 }

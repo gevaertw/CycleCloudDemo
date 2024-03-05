@@ -5,10 +5,13 @@ param subscriptionID string
 
 // Cyclecloud base Stuff
 param cycleCloudVMRGName string = '${baseName}-vm-rg'
-param cycleCloudVMName string = '${baseName}-vm'
+param cycleCloudVMName string = '${baseName}-Cycle-vm'
+param cycleCloudVMSize string = 'Standard_D4s_v5'
 param adminUsername string = 'cycleAdmin'
 @secure()
 param adminPassword string = 'Cycle_Cloud-1234'
+param cycleCloudStorageAccountName string
+param mgmtVMName string = '${baseName}-mgmt-vm'
 
 // Network stuff
 param cycleCloudNetworkRGName string = '${baseName}-net-rg'
@@ -32,6 +35,10 @@ param HPCCluster04SubnetName string = '${virtualNetworkName}-HPCCluster04-sn'
 param HPCCluster04SubnetPrefix string = ''
 
 
+// vars
+var cycleCloudSubnetID = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${cycleCloudNetworkRGName}/providers/Microsoft.Network/virtualNetworks/${virtualNetworkName}/subnets/${cycleCloudSubnetName}'
+var storageSubnetID = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${cycleCloudNetworkRGName}/providers/Microsoft.Network/virtualNetworks/${virtualNetworkName}/subnets/${storageSubnetName}'
+
 // Create the resource groups
 targetScope = 'subscription'
 
@@ -45,11 +52,13 @@ resource cycleCloudNetworkRG 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   location: location
 }
 
-
 // Deploy network stuff
 module networkDeployment './network.bicep' = {
   name: 'networkDeployment'
   scope: resourceGroup(subscriptionID, cycleCloudNetworkRGName)
+  dependsOn: [
+    cycleCloudNetworkRG
+  ]
   params: {
     baseName: baseName
     location: location
@@ -73,3 +82,25 @@ module networkDeployment './network.bicep' = {
   }
 }
 
+// Deploy CycleCloud
+module cycleCloudDeployment './cyclecloud.bicep' = {
+  name: 'cycleCloudDeployment'
+  scope: resourceGroup(subscriptionID, cycleCloudVMRGName)
+  dependsOn: [
+    cycleCloudVMRG
+  ]
+  params: {
+    baseName: baseName
+    cycleCloudNetworkRGName: cycleCloudNetworkRGName
+    virtualNetworkName: virtualNetworkName
+    cycleCloudVMName: cycleCloudVMName
+    cycleCloudSubnetID: cycleCloudSubnetID
+    location: location
+    virtualMachineSize: cycleCloudVMSize
+    adminUsername: adminUsername
+    adminPassword: adminPassword
+    cycleCloudStorageAccountName: cycleCloudStorageAccountName
+    storageSubnetID: storageSubnetID
+    mgmtVMName: mgmtVMName
+  }
+}
