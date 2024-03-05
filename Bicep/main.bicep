@@ -9,7 +9,7 @@ param cycleCloudVMName string = '${baseName}-Cycle-vm'
 param cycleCloudVMSize string = 'Standard_D4s_v5'
 param adminUsername string = 'cycleAdmin'
 @secure()
-param adminPassword string = 'Cycle_Cloud-1234'
+param adminPassword string = 'Cycle_Cloud-1234' // This is a bad password, don't use it, use a a keyvault instead
 param cycleCloudStorageAccountName string
 param mgmtVMName string = '${baseName}-mgmt-vm'
 

@@ -19,7 +19,6 @@ param storageSubnetID string
 param mgmtVMName string
 
 var mgmtVMNicName = '${mgmtVMName}-nic'
-var mgmtVMPIPName = '${mgmtVMName}-pip'
 var CycleCloudVMNicName = '${cycleCloudVMName}-nic'
 
 var cycleCloudStorageAccountPrivateEndpointName = '${cycleCloudStorageAccountName}-pe'
@@ -52,16 +51,6 @@ resource CycleCloudVMNic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   }
 }
 
-resource mgmtVMpip 'Microsoft.Network/publicIpAddresses@2022-11-01' = {
-  name: mgmtVMPIPName
-  location: location
-  properties: {
-    publicIPAllocationMethod: 'Static'
-  }
-  sku: {
-    name: 'Standard'
-  }
-}
 
 resource mgmtVMnic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   name: mgmtVMNicName
@@ -75,9 +64,6 @@ resource mgmtVMnic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
             id: cycleCloudSubnetID
           }
           privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
-            id: mgmtVMpip.id
-          }
         }
       }
     ]
@@ -206,12 +192,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
           value: '109.134.193.156'
         }
       ]
-
     }
-/*     azureFilesIdentityBasedAuthentication: {
-      directoryServiceOptions: 'AADDS'
-// can probably be removed.    
-    } */
   }
 }
 
@@ -236,10 +217,16 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-02-01' = {
   }
 }
 
-resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
+resource storageContainerCycleshared 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
   name: '${storageAccount.name}/default/cycleshared'
   properties: {
     publicAccess: 'None'
   }
 }
 
+resource storageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
+  name: '${storageAccount.name}/default/project1'
+  properties: {
+    publicAccess: 'None'
+  }
+}
