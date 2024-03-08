@@ -48,6 +48,8 @@ param actions array = [
   'Microsoft.Resources/subscriptions/resourceGroups/read'
   'Microsoft.Resources/subscriptions/resourceGroups/write'
   'Microsoft.Resources/subscriptions/resourceGroups/delete'
+  'Microsoft.MarketplaceOrdering/offerTypes/publishers/offers/plans/agreements/read'
+  
 ]
 
 @description('Array of notActions for the roleDefinition')

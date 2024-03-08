@@ -4,26 +4,26 @@ param baseName string
 param location string
 
 // Network stuff
-param cycleCloudNetworkRGName string 
-param virtualNetworkName string 
-param addressPrefixes array 
+param cycleCloudNetworkRGName string
+param virtualNetworkName string
+param addressPrefixes array
 
 param cycleCloudSubnetName string
 param cyclecloudSubnetPrefix string
-param storageSubnetName string 
+param storageSubnetName string
 param storageSubnetPrefix string
 //you cannot define the bastionsubnet name as it is a reserved name
 param bastionSubnetPrefix string
-param HPCCluster01SubnetName string 
+param HPCCluster01SubnetName string
 param HPCCluster01SubnetPrefix string
-param HPCCluster02SubnetName string 
+param HPCCluster02SubnetName string
 param HPCCluster02SubnetPrefix string
-param HPCCluster03SubnetName string 
+param HPCCluster03SubnetName string
 param HPCCluster03SubnetPrefix string
-param HPCCluster04SubnetName string 
+param HPCCluster04SubnetName string
 param HPCCluster04SubnetPrefix string
 
-param bastionHostName string 
+param bastionHostName string
 var bastionPublicIpName = '${bastionHostName}-pip'
 
 resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
@@ -41,7 +41,7 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
-              locations: ['*']
+              locations: [ '*' ]
             }
           ]
         }
@@ -50,7 +50,7 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: storageSubnetName
         properties: {
           addressPrefix: storageSubnetPrefix
-/*           serviceEndpoints: [
+          /*           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
               locations: ['*']
@@ -68,24 +68,49 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: HPCCluster01SubnetName
         properties: {
           addressPrefix: HPCCluster01SubnetPrefix
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+          ]
+
         }
       }
       {
         name: HPCCluster02SubnetName
         properties: {
           addressPrefix: HPCCluster02SubnetPrefix
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+          ]
         }
       }
       {
         name: HPCCluster03SubnetName
         properties: {
           addressPrefix: HPCCluster03SubnetPrefix
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+          ]
         }
       }
       {
         name: HPCCluster04SubnetName
         properties: {
           addressPrefix: HPCCluster04SubnetPrefix
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+          ]
         }
       }
     ]
@@ -107,8 +132,8 @@ resource bastionPublicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
 resource bastionHost 'Microsoft.Network/bastionHosts@2023-04-01' = {
   name: bastionHostName
   location: location
-    sku: {
-      name: 'standard'
+  sku: {
+    name: 'standard'
   }
   properties: {
     scaleUnits: 2
@@ -131,6 +156,6 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2023-04-01' = {
         }
       }
     ]
-    
+
   }
 }

@@ -1,0 +1,3 @@
+#cloud-config
+runcmd:
+    - [ sh, -c, "echo 'Hello, World!' > /home/cycleAdmin/hello.txt" ]

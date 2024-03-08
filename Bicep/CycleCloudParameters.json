@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionID": {
+            "value": ""
+        },
+        "baseName": {
+            "value": "CycleCloudPOC"
+        },
+        "location": {
+            "value": "swedencentral"
+        },
+        "cycleCloudNetworkRGName": {
+            "value": "CycleCloudPOC-net-rg"
+        },
+        "virtualNetworkName": {
+            "value": "CycleCloudPOC-vNet"
+        },
+        "addressPrefixes": {
+            "value": ["10.0.0.0/16"]
+        },
+        "cycleCloudSubnetName": {
+            "value": "CycleCloudPOC-vNet-CycleCloud-sn"
+        },
+        "cyclecloudSubnetPrefix": {
+            "value": "10.0.0.0/24"
+        },
+        "storageSubnetName": {
+            "value": "CycleCloudPOC-vNet-Storage-sn"
+        },
+        "storageSubnetPrefix": {
+            "value": "10.0.1.0/24"
+        },
+        "bastionSubnetPrefix": {
+            "value": "10.0.2.0/24"
+        },
+        "HPCCluster01SubnetName": {
+            "value": "CycleCloudPOC-vNet-HPCCluster01-sn"
+        },
+        "HPCCluster01SubnetPrefix": {
+            "value": "10.0.11.0/24"
+        },
+        "HPCCluster02SubnetName": {
+            "value": "CycleCloudPOC-vNet-HPCCluster02-sn"
+        },
+        "HPCCluster02SubnetPrefix": {
+            "value": "10.0.12.0/24"
+        },
+        "HPCCluster03SubnetName": {
+            "value": "CycleCloudPOC-vNet-HPCCluster03-sn"
+        },
+        "HPCCluster03SubnetPrefix": {
+            "value": "10.0.13.0/24"
+        },
+        "HPCCluster04SubnetName": {
+            "value": "CycleCloudPOC-vNet-HPCCluster04-sn"
+        },
+        "HPCCluster04SubnetPrefix": {
+            "value": "10.0.14.0/24"
+        },
+        "cycleCloudVMRGName": {
+            "value": "CycleCloudPOC-vm-rg"
+        },
+        "cycleCloudVMName": {
+            "value": "CycleCloudPOCCycle-vm"
+        },
+        "cycleCloudVMSize": {
+            "value": "Standard_D4s_v5"
+        },
+        "mgmtVMName": {
+            "value": "mgmtPOCCycle-vm"
+        },
+        "cycleCloudLockerStorageAccountName": {
+            "value": "lockcyclesa8168kt436864"
+        },
+        "cycleCloudNFSStorageAccountName": {
+            "value": "nfscyclesa8168kt436864"
+        }
+    }
+}

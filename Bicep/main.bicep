@@ -7,11 +7,14 @@ param subscriptionID string
 param cycleCloudVMRGName string = '${baseName}-vm-rg'
 param cycleCloudVMName string = '${baseName}-Cycle-vm'
 param cycleCloudVMSize string = 'Standard_D4s_v5'
-param adminUsername string = 'cycleAdmin'
+param adminUsername string = 'cycleadmin'
 @secure()
 param adminPassword string = 'Cycle_Cloud-1234' // This is a bad password, don't use it, use a a keyvault instead
-param cycleCloudStorageAccountName string
 param mgmtVMName string = '${baseName}-mgmt-vm'
+
+// Cyclecloud storage Stuff
+param cycleCloudLockerStorageAccountName string
+param cycleCloudNFSStorageAccountName string
 
 // Network stuff
 param cycleCloudNetworkRGName string = '${baseName}-net-rg'
@@ -38,6 +41,9 @@ param HPCCluster04SubnetPrefix string = ''
 // vars
 var cycleCloudSubnetID = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${cycleCloudNetworkRGName}/providers/Microsoft.Network/virtualNetworks/${virtualNetworkName}/subnets/${cycleCloudSubnetName}'
 var storageSubnetID = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${cycleCloudNetworkRGName}/providers/Microsoft.Network/virtualNetworks/${virtualNetworkName}/subnets/${storageSubnetName}'
+
+//not nice but it works
+var cluster01SubnetID = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${cycleCloudNetworkRGName}/providers/Microsoft.Network/virtualNetworks/${virtualNetworkName}/subnets/${HPCCluster01SubnetName}'
 
 // Create the resource groups
 targetScope = 'subscription'
@@ -99,8 +105,10 @@ module cycleCloudDeployment './cyclecloud.bicep' = {
     virtualMachineSize: cycleCloudVMSize
     adminUsername: adminUsername
     adminPassword: adminPassword
-    cycleCloudStorageAccountName: cycleCloudStorageAccountName
+    cycleCloudLockerStorageAccountName: cycleCloudLockerStorageAccountName
+    cycleCloudNFSStorageAccountName: cycleCloudNFSStorageAccountName
     storageSubnetID: storageSubnetID
+    cluster01SubnetID: cluster01SubnetID
     mgmtVMName: mgmtVMName
   }
 }
