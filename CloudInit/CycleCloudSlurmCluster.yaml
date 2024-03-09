@@ -1,0 +1,4 @@
+#cloud-config
+bootcmd:
+# There is a key issue in the current Alma Linux images, https://github.com/Azure/cyclecloud-slurm/issues/214
+- rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux

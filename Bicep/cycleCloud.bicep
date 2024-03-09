@@ -35,10 +35,18 @@ resource cluster01Subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' 
 
 var mgmtVMNicName = '${mgmtVMName}-nic'
 var CycleCloudVMNicName = '${cycleCloudVMName}-nic'
+var CyclecloudVMKeyName = '${cycleCloudVMName}-sshKey'
 
 var cycleCloudStorageAccountCycleCloudSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cycleCloudSubnet-pe'
 var cycleCloudStorageAccountStorageSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-storageSubnet-pe'
 var cycleCloudStorageAccountCluster01SubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cluster01Subnet-pe'
+
+
+resource sshKey 'Microsoft.Compute/sshPublicKeys@2022-03-01' = {
+  name: CyclecloudVMKeyName
+  location: location
+  properties: {}  
+}
 
 
 

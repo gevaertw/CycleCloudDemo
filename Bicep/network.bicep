@@ -26,6 +26,11 @@ param HPCCluster04SubnetPrefix string
 param bastionHostName string
 var bastionPublicIpName = '${bastionHostName}-pip'
 
+var bastionNSGName = '${baseName}-bastion-nsg'
+var cycleCloudVMNSGName = '${baseName}-cycleCloudVM-nsg'
+var cycleCloudClusterNSGName = '${baseName}-cycleCloudCluster-nsg'
+var cycleCloudStorageSGName = '${baseName}-cycleCloudStorageSG-nsg'
+
 resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: virtualNetworkName
   location: location
@@ -38,9 +43,16 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: cycleCloudSubnetName
         properties: {
           addressPrefix: cyclecloudSubnetPrefix
+          networkSecurityGroup: {
+            id: cycleCloudVMNSG_Resource.id
+          }
           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+            {
+              service: 'Microsoft.keyvault'
               locations: [ '*' ]
             }
           ]
@@ -50,27 +62,34 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: storageSubnetName
         properties: {
           addressPrefix: storageSubnetPrefix
-          /*           serviceEndpoints: [
-            {
-              service: 'Microsoft.Storage'
-              locations: ['*']
-            }
-          ] */
+          networkSecurityGroup: {
+            id: cycleCloudStorageNSG_Resource.id
+          }
         }
       }
       {
         name: 'AzureBastionSubnet'
         properties: {
           addressPrefix: bastionSubnetPrefix
+          networkSecurityGroup: {
+            id: bastionNSG_Resource.id
+          }
         }
       }
       {
         name: HPCCluster01SubnetName
         properties: {
           addressPrefix: HPCCluster01SubnetPrefix
+          networkSecurityGroup: {
+            id: cycleCloudClusterNSG_Resource.id
+          }
           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+            {
+              service: 'Microsoft.keyvault'
               locations: [ '*' ]
             }
           ]
@@ -81,9 +100,16 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: HPCCluster02SubnetName
         properties: {
           addressPrefix: HPCCluster02SubnetPrefix
+          networkSecurityGroup: {
+            id: cycleCloudClusterNSG_Resource.id
+          }
           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+            {
+              service: 'Microsoft.keyvault'
               locations: [ '*' ]
             }
           ]
@@ -93,9 +119,16 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: HPCCluster03SubnetName
         properties: {
           addressPrefix: HPCCluster03SubnetPrefix
+          networkSecurityGroup: {
+            id: cycleCloudClusterNSG_Resource.id
+          }
           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+            {
+              service: 'Microsoft.keyvault'
               locations: [ '*' ]
             }
           ]
@@ -105,9 +138,16 @@ resource cycleCloudNetwork 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         name: HPCCluster04SubnetName
         properties: {
           addressPrefix: HPCCluster04SubnetPrefix
+          networkSecurityGroup: {
+            id: cycleCloudClusterNSG_Resource.id
+          }
           serviceEndpoints: [
             {
               service: 'Microsoft.Storage'
+              locations: [ '*' ]
+            }
+            {
+              service: 'Microsoft.keyvault'
               locations: [ '*' ]
             }
           ]
@@ -158,4 +198,52 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2023-04-01' = {
     ]
 
   }
+}
+
+//nsg stuff
+module nsgBastion './nsg-Bastion.bicep' = {
+  name: '${baseName}-Bastion-nsg'
+  params: {
+    nsgName: bastionNSGName
+    location: location
+  }
+}
+
+resource bastionNSG_Resource 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing= {
+  name: bastionNSGName
+}
+
+module nsgCycleCloudCluster './nsg-CycleCloudCluster.bicep' = {
+  name: '${baseName}-CycleCloudCluster-nsg'
+  params: {
+    nsgName: cycleCloudClusterNSGName
+    location: location
+  }
+}
+
+resource cycleCloudClusterNSG_Resource 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing= {
+  name: cycleCloudClusterNSGName
+}
+
+module nsgCycleCloudVM './nsg-CycleCloudVM.bicep' = {
+  name: '${baseName}-CycleCloudVM-nsg'
+  params: {
+    nsgName: cycleCloudVMNSGName
+    location: location
+  }
+}
+resource cycleCloudVMNSG_Resource 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing= {
+  name: cycleCloudVMNSGName
+}
+
+module nsgCycleCloudStorage './nsg-CycleCloudStorage.bicep' = {
+  name: '${baseName}-CycleCloudStorage-nsg'
+  params: {
+    nsgName: cycleCloudStorageSGName
+    location: location
+  }
+}
+
+resource cycleCloudStorageNSG_Resource 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing= {
+  name: cycleCloudStorageSGName
 }

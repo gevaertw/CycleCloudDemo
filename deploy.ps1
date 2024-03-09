@@ -3,7 +3,6 @@
 $jsonContent = Get-Content -Raw -Path './Bicep/CycleCloudParameters.json'
 $parametersObj = ConvertFrom-Json $jsonContent
 
-
 $location = $parametersObj.parameters.location.value
 Write-Host -ForegroundColor Green "Location: $location"
 $cycleCloudVMName = $parametersObj.parameters.cycleCloudVMName.value
@@ -17,7 +16,7 @@ Write-Host -ForegroundColor Green "CycleCloud Storage Account Name: $cycleCloudL
 $cycleCloudNFSStorageAccountName = $parametersObj.parameters.cycleCloudNFSStorageAccountName.value
 Write-Host -ForegroundColor Green "CycleCloud Storage Account Name: $cycleCloudNFSStorageAccountName"
 
-cd ./Bicep
+Set-Location ./Bicep
 # Deploy the Azure resources using Bicep
 az deployment sub create `
     --name MyCycleCloudDeployment `
@@ -29,7 +28,7 @@ az deployment sub create `
     --name MyCycleCloudRoleDeployment `
     --template-file ./cyclecloudRole.bicep `
     --location $location
-cd ..
+Set-Location ..
 
 # grant the role to the identity of the cyclecloud VM
 $identityId=$(az resource list -n $cycleCloudVMName --query [*].identity.principalId --out tsv)
