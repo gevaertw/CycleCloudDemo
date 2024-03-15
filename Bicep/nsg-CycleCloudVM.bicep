@@ -90,6 +90,20 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
           direction: 'Outbound'
         }
       }
+      {
+        name: 'Allow-Internet'
+        properties: {
+          description: 'Allows Azure Storage access'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+          sourceAddressPrefix: '*'
+          destinationAddressPrefix: 'Internet'
+          access: 'Allow'
+          priority: 1104
+          direction: 'Outbound'
+        }
+      }
 
     ]
   }
