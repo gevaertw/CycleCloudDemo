@@ -16,7 +16,7 @@
 
 ## Other, non Slurm parameters
 ## how long do you want the job to run?
-jobruntime=1m
+jobruntime=60m
 ## How many jobs you want to launch?
 jobcount=3
 
