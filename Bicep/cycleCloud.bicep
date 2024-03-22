@@ -37,9 +37,14 @@ var mgmtVMNicName = '${mgmtVMName}-nic'
 var CycleCloudVMNicName = '${cycleCloudVMName}-nic'
 var CyclecloudVMKeyName = '${cycleCloudVMName}-sshKey'
 
-var cycleCloudStorageAccountCycleCloudSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cycleCloudSubnet-pe'
-var cycleCloudStorageAccountStorageSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-storageSubnet-pe'
-var cycleCloudStorageAccountCluster01SubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cluster01Subnet-pe'
+var lockerStorageAccountCycleCloudSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cycleCloudSubnet-pe'
+var lockerStorageAccountStorageSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-storageSubnet-pe'
+var lockerStorageAccountCluster01SubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cluster01Subnet-pe'
+
+var nfsStorageAccountCycleCloudSubnetPrivateEndpointName = '${cycleCloudNFSStorageAccountName}-cycleCloudSubnet-pe'
+var nfsStorageAccountStorageSubnetPrivateEndpointName = '${cycleCloudNFSStorageAccountName}-storageSubnet-pe'
+var nfsStorageAccountCluster01SubnetPrivateEndpointName = '${cycleCloudNFSStorageAccountName}-cluster01Subnet-pe'
+
 
 
 resource sshKey 'Microsoft.Compute/sshPublicKeys@2022-03-01' = {
@@ -256,8 +261,8 @@ resource storageAccountNFS 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource privateEndpointStorageSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: cycleCloudStorageAccountCycleCloudSubnetPrivateEndpointName
+resource lockerPrivateEndpointStorageSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: lockerStorageAccountCycleCloudSubnetPrivateEndpointName
   location: location
   properties: {
     subnet: {
@@ -277,8 +282,8 @@ resource privateEndpointStorageSubnet 'Microsoft.Network/privateEndpoints@2021-0
   }
 }
 
-resource privateEndpointCycleCloudSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: cycleCloudStorageAccountStorageSubnetPrivateEndpointName
+resource lockerPrivateEndpointCycleCloudSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: lockerStorageAccountStorageSubnetPrivateEndpointName
   location: location
   properties: {
     subnet: {
@@ -298,8 +303,8 @@ resource privateEndpointCycleCloudSubnet 'Microsoft.Network/privateEndpoints@202
   }
 }
 
-resource privateEndpointCluster01SubnetSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: cycleCloudStorageAccountCluster01SubnetPrivateEndpointName
+resource lockerPrivateEndpointCluster01SubnetSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: lockerStorageAccountCluster01SubnetPrivateEndpointName
   location: location
   properties: {
     subnet: {
@@ -319,6 +324,69 @@ resource privateEndpointCluster01SubnetSubnet 'Microsoft.Network/privateEndpoint
   }
 }
 
+resource nfsPrivateEndpointStorageSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: nfsStorageAccountCycleCloudSubnetPrivateEndpointName
+  location: location
+  properties: {
+    subnet: {
+      id: storageSubnetID
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'myPrivateLinkServiceConnection'
+        properties: {
+          privateLinkServiceId: storageAccountNFS.id
+          groupIds: [
+            'blob'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource nfsPrivateEndpointCycleCloudSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: nfsStorageAccountStorageSubnetPrivateEndpointName
+  location: location
+  properties: {
+    subnet: {
+      id: cycleCloudSubnetID
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'myPrivateLinkServiceConnection'
+        properties: {
+          privateLinkServiceId: storageAccountNFS.id
+          groupIds: [
+            'blob'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource nfsPrivateEndpointCluster01SubnetSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
+  name: nfsStorageAccountCluster01SubnetPrivateEndpointName
+  location: location
+  properties: {
+    subnet: {
+      id: cluster01SubnetID
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'myPrivateLinkServiceConnection'
+        properties: {
+          privateLinkServiceId: storageAccountNFS.id
+          groupIds: [
+            'blob'
+          ]
+        }
+      }
+    ]
+  }
+}
+
 //not that clean to create them all individualu, but it works
 resource storageContainerCycleNFS 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = {
   name: '${storageAccountNFS.name}/default/cyclenfs'
@@ -326,8 +394,6 @@ resource storageContainerCycleNFS 'Microsoft.Storage/storageAccounts/blobService
     publicAccess: 'None'
   }
 }
-
-
 
 resource storageContainerproject1 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = {
   name: '${storageAccountNFS.name}/default/project1'

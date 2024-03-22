@@ -23,7 +23,14 @@ type .\.ssh\id_rsa.pub
 ```
 copy the public key, and enter it when asked during the first deploy of CycleCloud.
 
+## CycleCloud setup
+- Open a browser and go to the CycleCloud server's IP address using http, enter the base information, including the public key just created.
+- In the subscription wizard
+  - Select the subscription you want to use
+  - The region where you want to deploy the resources.  
+  - Select the storage account created earlier, that starts with lock
 
+## Initialize the CycleCloud CLI and api
 Log on to the CycleCloud server using Bastion and run the following command:
 ```bash 
 cyclecloud initialize
@@ -31,7 +38,7 @@ cyclecloud initialize
 
 This command will create a .cycle folder with the config.ini file in the CycleCloud user's home directory.  From this point you can work with the CLI and the API on the CycleCloud server.
 
-Open a browser and go to the CycleCloud server's IP address using http, enter the base information, including the public key just created.
+
 
 # Create a Slurm cluster
 

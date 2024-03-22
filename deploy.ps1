@@ -17,29 +17,30 @@ $cycleCloudNFSStorageAccountName = $parametersObj.parameters.cycleCloudNFSStorag
 Write-Host -ForegroundColor Green "CycleCloud Storage Account Name: $cycleCloudNFSStorageAccountName"
 
 Set-Location ./Bicep
-# Deploy the Azure resources using Bicep
+Write-Host -ForegroundColor Green Deploy the Azure resources using Bicep
 az deployment sub create `
     --name MyCycleCloudDeployment `
     --template-file ./main.bicep `
     --location $location `
     --parameters '@CycleCloudParameters.json'
-# create the custom role
+Write-Host -ForegroundColor Green create the custom role
     az deployment sub create `
     --name MyCycleCloudRoleDeployment `
     --template-file ./cyclecloudRole.bicep `
     --location $location
 Set-Location ..
 
-# grant the role to the identity of the cyclecloud VM
+
+Write-Host -ForegroundColor Green grant the role to the identity of the cyclecloud VM
 $identityId=$(az resource list -n $cycleCloudVMName --query [*].identity.principalId --out tsv)
 Write-Host -ForegroundColor Green "Identity Id: $identityId"
-# assign the role to the identity
+Write-Host -ForegroundColor Green Assign the role to the identity
 az role assignment create `
     --role 'Custom Role - CycleCloud system assigned identity' `
     --assignee-object-id $identityId  `
     --assignee-principal-type ServicePrincipal `
     --scope "/subscriptions/$managementSubscriptionID"
-# grant the identity access to the storage accounts
+Write-Host -ForegroundColor Green Grant the identity access to the storage accounts
 az role assignment create `
     --role 'Storage Blob Data Contributor' `
     --assignee-object-id $identityId  `

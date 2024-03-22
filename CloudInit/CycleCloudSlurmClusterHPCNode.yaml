@@ -7,7 +7,7 @@ bootcmd:
 
 #packages:
 
-
 #write_files:
 
-#runcmd:
+runcmd:
+-  touch cloudinit_was_here.txt

@@ -12,11 +12,11 @@
             "value": "swedencentral"
         },
         "adminUsername": {
-            "value": "Cycle_Cloud-1234"
+            "value": "cycleadmin"
         }
         ,
         "adminPassword": {
-            "value": "swedencentral"
+            "value": "Cycle_Cloud=1234"
         },
         "cycleCloudNetworkRGName": {
             "value": "CycleCloudPOC-net-rg"
