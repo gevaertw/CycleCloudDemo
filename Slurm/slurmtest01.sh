@@ -2,6 +2,9 @@
 #!/bin/bash
 
 ## Resource Request
+#SBATCH --job-name=testJob
+#SBATCH --output=testJob-%j.out
+#SBATCH --error=testJobErrors-%j.out
 #SBATCH --job-name=singlecpu
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
