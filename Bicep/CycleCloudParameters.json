@@ -79,10 +79,10 @@
             "value": "mgmtPOCCycle-vm"
         },
         "cycleCloudLockerStorageAccountName": {
-            "value": "lockcyclesa8168kt436864"
+            "value": "lockcyclesa8168kt436865"
         },
         "cycleCloudNFSStorageAccountName": {
-            "value": "nfscyclesa8168kt436864"
+            "value": "nfscyclesa8168kt436865"
         }
     }
 }

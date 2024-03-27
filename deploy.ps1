@@ -1,8 +1,13 @@
-# check the parameters file for the correct values before running this script
+###############################################################################
+# Check the parameters file for the correct values before running this script #
+###############################################################################
+
+
 # Read the parameters file for use in this script
 $jsonContent = Get-Content -Raw -Path './Bicep/CycleCloudParameters.json'
 $parametersObj = ConvertFrom-Json $jsonContent
 
+# Display the parameters
 $location = $parametersObj.parameters.location.value
 Write-Host -ForegroundColor Green "Location: $location"
 $cycleCloudVMName = $parametersObj.parameters.cycleCloudVMName.value

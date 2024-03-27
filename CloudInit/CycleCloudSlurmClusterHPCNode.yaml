@@ -10,4 +10,4 @@ bootcmd:
 #write_files:
 
 runcmd:
--  touch cloudinit_was_here.txt
+-  touch cloudinit_was_on_the_HPC_node.txt

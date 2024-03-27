@@ -1,4 +1,9 @@
 Use at your own risk responsibility etc.  For POC purposes only, designed for functionality, not security.  Im not giving support, nor does my employer.
+# What does this do? 
+Deploy a Cyclecloud cluster on Azure with additional components for simplified management and testing.
+# Known issue's
+- There is a dependency problem in the deployment script, if you run the script 2 times you will get a working environment.  
+
 # Architecture overview
 <img src="./Doc/draw/overview.drawio.svg">
 
@@ -16,7 +21,8 @@ Use at your own risk responsibility etc.  For POC purposes only, designed for fu
 
 
 # Post deployment tasks:
-Log on to the management windows 11 workstation and run the following command:
+- Log on to the management Windows 11 workstation and run the following command:
+
 ```
 ssh-keygen
 type .\.ssh\id_rsa.pub
@@ -24,14 +30,18 @@ type .\.ssh\id_rsa.pub
 copy the public key, and enter it when asked during the first deploy of CycleCloud.
 
 ## CycleCloud setup
-- Open a browser and go to the CycleCloud server's IP address using http, enter the base information, including the public key just created.
+- Open a browser and go to the CycleCloud server's IP address using http (not https) 
+- Choose a site name 
+- Enter the user information, including the public key just created.
 - In the subscription wizard
-  - Select the subscription you want to use
-  - The region where you want to deploy the resources.  
-  - Select the storage account created earlier, that starts with lock
+  - Select the subscription you used for the azure deployment
+  - The region where you want to deploy the resources, must be the same region as the rest of the Azure resources  
+  - Select the storage account created earlier, witch name starts with lock
+  - Accept the marketplace terms
 
 ## Initialize the CycleCloud CLI and api
 Log on to the CycleCloud server using Bastion and run the following command:
+
 ```bash 
 cyclecloud initialize
 ```
@@ -46,33 +56,61 @@ This command will create a .cycle folder with the config.ini file in the CycleCl
 - Give the thing a name
 
 ## Required settings
-- Select a region, us the same as teh region where you deployed CycleCloud
-- Select your VM types
+### Virtual Machines
+- Select a region, us the same as the region where you deployed CycleCloud
+- Select your VM types for the scheduler and the HPC nodes, in this window you can also select spot instances for the HPC nodes.
+### Auto-Scaling
 - Set core limits
-- Select a network that is big enough to hold the VMs
+### Networking
+- Select a network that is big enough to hold the amount of VMs
+### High Availability
+- Leave default
 
 ## Network attached storage
-- for now leave default
+- Leave everything default
 
 ## Advanced settings
+### Slurm Settings
+- Leave default
+### Azure Settings
+- Leave default 
 ### Software
-- Select the OS, and the version (leave default for now)
-
+- Select the OS, and the version, this POC assumes Alma Linux (leave default for now).  Ubuntu should not given any issues, but the test scripts are not tested on Ubuntu.
+- Check the "Disable PMC" box, this will exclude MSFT repositories, currently there is a bug in one of teh repo's that will cause the install to fail.  
+### Node Health Checks
+- Leave default
 ### Advanced Networking
-- remove the box from use Public Head Node
+- Remove the box "Return Proxy"
+- Remove the box "Use Public Head Node"
 
 ## Security
-leave all default
+### Security Settings
+- Leave default
+### Encryption Settings
+- Leave default
 
 ## Cloud-init
 - Disable apply to all, the individual node types can now have their own cloud-init settings
 - Paste the content from the corresponding file in each cloud-init field
-  - scheduler: CycleCloudSlurmClusterSheduler.yaml
-  - hpc: CycleCloudSlurmClusterHPC.yaml
+  - Scheduler: CycleCloudSlurmClusterSheduler.yaml
+  - HPC: CycleCloudSlurmClusterHPC.yaml
 
 # Test the cluster
+## Start the cluster
+- Hit the start button from the cluster, after 5 minutes it should be ready.  
+- If you have errors, review the logs in the CycleCloud server, if the cluster is running, you can log on to the scheduler node using ssh and check error logs:
+  - Cloud init logs: /var/log/cloud-init-output.log
+  - slurm install logs: /var/log/azure-slurm-install.log
+
+## Run an experiment
 - From the management workstation, log on to the scheduler node using ssh
-- In the folder /slurm/experiment01/ you will find a script called slurmtest02.sh
+- In the folder /experiments you will find a script called slurmtest02.sh
 - Edit the script so it has the parameters you want (optional)  
 - Run the script, it should create HPC nodes & start a job on the cluster
+
+# Stuff to know about
+## Run, terminate, delete a cluster
+- When you start a cluster, the scheduler node is created.  Under normal circumstances HPC nodes are only created when a job is submitted.  
+- When you terminate the cluster, the HPC and scheduler nodes are deleted, but the schedulers disk remains.  
+- When you delete the cluster, everything is deleted, including the scheduler disk.
 
