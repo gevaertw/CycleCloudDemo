@@ -22,9 +22,9 @@ jobcount=3
 
 ## Job Steps
 ## Each sbatch line in the loop is considered a new job to slurm!
-srun echo "Start Slurm Test"
+echo "Start Slurm Test"
 for i in {1..8}
 do
   sbatch ./hpcjob02.sh $i $jobruntime --output=hpcjob02_output.txt --error=hpcjob02_error.txt
 done
-srun echo "End Slurm Test"
+echo "End Slurm Test"
