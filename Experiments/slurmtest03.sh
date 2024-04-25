@@ -9,9 +9,9 @@
 #SBATCH --output=testJob-%j.out
 #SBATCH --error=testJobErrors-%j.out
 #SBATCH --time=1-00:10:00
-#SBATCH --ntasks=8
+#SBATCH --ntasks=10
 #SBATCH --ntasks-per-node=2
-#SBATCH --nodes=4
+#SBATCH --nodes=5
 #SBATCH --mem-per-cpu=500M
 echo "Slurm Test based on sbatch that creates 4 nodes with 2 tasks per node and 8 tasks in total."
 
