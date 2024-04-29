@@ -6,36 +6,53 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
   location: location
   properties: {
     securityRules: [
+
+//INBOUND RULES -------------------------------------------------------------------------------------------------------
       {
-        name: 'Allow-amqp_5672'
+        name: 'Allow-amqp_5672_inbound'
         properties: {
           description: 'Allows AMQP traffic'
           protocol: 'Tcp'
           sourcePortRange: '*'
           destinationPortRange: '5672'
           sourceAddressPrefix: 'VirtualNetwork'
-          destinationAddressPrefix: '*'
+          destinationAddressPrefix: 'VirtualNetwork'
           access: 'Allow'
           priority: 1100
           direction: 'Inbound'
         }
       }
       {
-        name: 'Allow-https_9443'
+        name: 'Allow-https_9443_inbound'
         properties: {
           description: 'Allows HTTPS (special port) traffic'
           protocol: 'Tcp'
           sourcePortRange: '*'
           destinationPortRange: '9443'
           sourceAddressPrefix: 'VirtualNetwork'
-          destinationAddressPrefix: '*'
+          destinationAddressPrefix: 'VirtualNetwork'
           access: 'Allow'
           priority: 1101
           direction: 'Inbound'
         }
       }
       {
-        name: 'Allow-AzureStorage'
+        name: 'Allow-SSH_22_inbound'
+        properties: {
+          description: 'Allows SSH to cluster nodes'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '22'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          access: 'Allow'
+          priority: 1106
+          direction: 'Inbound'
+        }
+      }
+//OUTBOUND RULES -------------------------------------------------------------------------------------------------------
+      {
+        name: 'Allow-AzureStorage_443_outbound'
         properties: {
           description: 'Allows Azure Storage access'
           protocol: 'Tcp'
@@ -49,7 +66,7 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
         }
       }
       {
-        name: 'Allow-ActiveDirectory'
+        name: 'Allow-ActiveDirectory_443_outbound'
         properties: {
           description: 'Allows Azure AD access'
           protocol: 'Tcp'
@@ -63,7 +80,7 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
         }
       }
       {
-        name: 'Allow-AzureMonitor'
+        name: 'Allow-AzureMonitor_443_outbound'
         properties: {
           description: 'Allows Azure Monitor access'
           protocol: 'Tcp'
@@ -77,7 +94,7 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
         }
       }
       {
-        name: 'Allow-AzureResourceManager'
+        name: 'Allow-AzureResourceManager_443_outbound'
         properties: {
           description: 'Allows Azure ResourceManager access'
           protocol: 'Tcp'
@@ -91,7 +108,7 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
         }
       }
       {
-        name: 'Allow-Internet'
+        name: 'Allow-Internet_443_outbound'
         properties: {
           description: 'Allows Azure Storage access'
           protocol: 'Tcp'
@@ -104,7 +121,34 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
           direction: 'Outbound'
         }
       }
-
+      {
+        name: 'Allow-Ganglia_8652_outbound'
+        properties: {
+          description: 'Allows Ganglia '
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '8652'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          access: 'Allow'
+          priority: 1105
+          direction: 'Outbound'
+        }
+      }
+      {
+        name: 'Allow-SSH_22_outbound'
+        properties: {
+          description: 'Allows SSH to cluster nodes'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '22'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          access: 'Allow'
+          priority: 1106
+          direction: 'Outbound'
+        }
+      }
     ]
   }
 

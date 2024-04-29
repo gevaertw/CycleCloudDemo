@@ -5,7 +5,9 @@ bootcmd:
 
 #mounts:
 
-#packages:
+packages:
+- python39
+- jq
 
 #write_files:
 
@@ -13,22 +15,8 @@ runcmd:
 # Install the azNFS package
 - export AZNFS_NONINTERACTIVE_INSTALL=1
 - wget -O - -q https://github.com/Azure/AZNFS-mount/releases/latest/download/aznfs_install.sh | bash
-# Mount the cyclenfs NFS share that sits on the storage accounts
+# Mount the cyclenfs NFS share that sits on the storage accounts, make sure to replace the storage account name with the actual one.
 - mkdir -p /cyclenfs
-- chmod -R a+r /cyclenfs
+- chmod -R 755 /cyclenfs
 - mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436864.blob.core.windows.net:/nfscyclesa8168kt436864/cyclenfs  /cyclenfs
 
-# Get the slurm experiments
-- cd /
-- mkdir experiments
-- chmod 777 experiments
-- cd /experiments
-- touch cloudinit_was_on_the_scheduler.txt
-- wget https://raw.githubusercontent.com/gevaertw/CycleCloudDemo/main/Slurm/slurmtest01.sh
-- wget https://raw.githubusercontent.com/gevaertw/CycleCloudDemo/main/Slurm/slurmtest02.sh
-- wget https://raw.githubusercontent.com/gevaertw/CycleCloudDemo/main/Slurm/hpcjob01.sh
-- wget https://raw.githubusercontent.com/gevaertw/CycleCloudDemo/main/Slurm/hpcjob02.sh
-- chmod +x slurmtest01.sh
-- chmod +x slurmtest02.sh
-- chmod +x hpcjob01.sh
-- chmod +x hpcjob02.sh

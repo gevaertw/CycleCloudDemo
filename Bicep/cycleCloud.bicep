@@ -1,62 +1,59 @@
 //contains all stuff in the main resource group
 
-param baseName string
+//param baseName string
 param location string
-param adminUsername string
-
 param cycleCloudNetworkRGName string
-param virtualNetworkName string
+param cycleCloudVnetName string
+param cycleCloudSubnetName string
+param HPCCluster01SubnetName string
+param HPCCluster02SubnetName string
+param HPCCluster03SubnetName string
+param HPCCluster04SubnetName string
+param StorageAccountExceptionIP string
 param cycleCloudLockerStorageAccountName string
-param cycleCloudNFSStorageAccountName string
-
+param adminUsername string
 @secure()
 param adminPassword string
 param cycleCloudVMName string
 param virtualMachineSize string
-
-param cycleCloudSubnetID string
-param storageSubnetID string
-param cluster01SubnetID string
-
 param mgmtVMName string
 
-resource cycleCloudSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: cycleCloudSubnetID
+resource cycleCloudvNet_R 'Microsoft.Network/virtualNetworks@2022-11-01' existing = {
+  name: cycleCloudVnetName
+  scope: resourceGroup(cycleCloudNetworkRGName)
 }
 
-resource storageSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: storageSubnetID
+resource cycleCloudSN_R 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' existing = {
+  name: cycleCloudSubnetName
+  parent: cycleCloudvNet_R
 }
 
-resource cluster01Subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  name: cluster01SubnetID
+resource HPCCluster01SN_R 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' existing = {
+  name: HPCCluster01SubnetName
+  parent: cycleCloudvNet_R
+}
+resource HPCCluster02SN_R 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' existing = {
+  name: HPCCluster02SubnetName
+  parent: cycleCloudvNet_R
+}
+resource HPCCluster03SN_R 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' existing = {
+  name: HPCCluster03SubnetName
+  parent: cycleCloudvNet_R
+}
+resource HPCCluster04SN_R 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' existing = {
+  name: HPCCluster04SubnetName
+  parent: cycleCloudvNet_R
 }
 
+/* resource virtualNetworkNameResource_R 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
+  name: cycleCloudVnetName
+} */
 
 var mgmtVMNicName = '${mgmtVMName}-nic'
 var CycleCloudVMNicName = '${cycleCloudVMName}-nic'
-var CyclecloudVMKeyName = '${cycleCloudVMName}-sshKey'
-
-var lockerStorageAccountCycleCloudSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cycleCloudSubnet-pe'
-var lockerStorageAccountStorageSubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-storageSubnet-pe'
-var lockerStorageAccountCluster01SubnetPrivateEndpointName = '${cycleCloudLockerStorageAccountName}-cluster01Subnet-pe'
-
-var nfsStorageAccountCycleCloudSubnetPrivateEndpointName = '${cycleCloudNFSStorageAccountName}-cycleCloudSubnet-pe'
-var nfsStorageAccountStorageSubnetPrivateEndpointName = '${cycleCloudNFSStorageAccountName}-storageSubnet-pe'
-var nfsStorageAccountCluster01SubnetPrivateEndpointName = '${cycleCloudNFSStorageAccountName}-cluster01Subnet-pe'
-
-
-
-resource sshKey 'Microsoft.Compute/sshPublicKeys@2022-03-01' = {
-  name: CyclecloudVMKeyName
-  location: location
-  properties: {}  
-}
-
-
 
 // VM networking
-resource CycleCloudVMNic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
+resource CycleCloudVMNic_R 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   name: CycleCloudVMNicName
   location: location
   properties: {
@@ -65,18 +62,16 @@ resource CycleCloudVMNic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: cycleCloudSubnetID
+            id: cycleCloudSN_R.id
           }
           privateIPAllocationMethod: 'Dynamic'
-
         }
       }
     ]
   }
 }
 
-
-resource mgmtVMnic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
+resource mgmtVMnic_R 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   name: mgmtVMNicName
   location: location
   properties: {
@@ -85,7 +80,7 @@ resource mgmtVMnic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: cycleCloudSubnetID
+            id: cycleCloudSN_R.id
           }
           privateIPAllocationMethod: 'Dynamic'
         }
@@ -94,7 +89,8 @@ resource mgmtVMnic 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   }
 }
 
-resource cycleCloudVirtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+// Cyclecloud Server
+resource cycleCloudVirtualMachine_R 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   name: cycleCloudVMName
   location: location
   properties: {
@@ -104,7 +100,7 @@ resource cycleCloudVirtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01'
     networkProfile: {
       networkInterfaces: [
         {
-          id: CycleCloudVMNic.id
+          id: CycleCloudVMNic_R.id
         }
       ]
     }
@@ -112,9 +108,6 @@ resource cycleCloudVirtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01'
       osDisk: {
         name: '${cycleCloudVMName}-osdisk'
         createOption: 'fromImage'
-        managedDisk: {
-          storageAccountType: 'Premium_LRS'
-        }
       }
       imageReference: {
         publisher: 'azurecyclecloud'
@@ -153,7 +146,8 @@ resource cycleCloudVirtualMachine 'Microsoft.Compute/virtualMachines@2022-11-01'
   }
 }
 
-resource mgmtVM 'Microsoft.Compute/virtualMachines@2021-07-01' = {
+// Management VM
+resource mgmtVM_R 'Microsoft.Compute/virtualMachines@2021-07-01' = {
   name: mgmtVMName
   location: location
   properties: {
@@ -169,9 +163,6 @@ resource mgmtVM 'Microsoft.Compute/virtualMachines@2021-07-01' = {
       }
       osDisk: {
         createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: 'Premium_LRS'
-        }
       }
     }
     osProfile: {
@@ -182,14 +173,15 @@ resource mgmtVM 'Microsoft.Compute/virtualMachines@2021-07-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: mgmtVMnic.id
+          id: mgmtVMnic_R.id
         }
       ]
     }
   }
 }
 
-resource storageAccountLocker 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+// Storage accounts
+resource storageAccountLocker_R 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: cycleCloudLockerStorageAccountName
   location: location
   sku: {
@@ -197,214 +189,50 @@ resource storageAccountLocker 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
   kind: 'StorageV2'
   properties: {
-    allowBlobPublicAccess: false
+    accessTier: 'Hot'
+    dnsEndpointType: 'Standard'
+    publicNetworkAccess: 'Enabled'
+    allowBlobPublicAccess: true
     isHnsEnabled: false //not allowed for cyclecloud
     isNfsV3Enabled: false
     minimumTlsVersion: 'TLS1_2'
     networkAcls: {
-      bypass: 'Logging, Metrics'
-      defaultAction: 'Deny'
+      bypass: 'Logging, Metrics, AzureServices'
       virtualNetworkRules: [
         {
+          id: cycleCloudSN_R.id
           action: 'Allow'
-          id: cycleCloudSubnetID
+          state: 'Succeeded'
         }
         {
+          id: HPCCluster01SN_R.id
           action: 'Allow'
-          id: cluster01SubnetID
+          state: 'Succeeded'
         }
-      ]
-      ipRules: [
         {
-          // put public IPs of peoble that need access to the storage account here
+          id: HPCCluster02SN_R.id
           action: 'Allow'
-          value: '109.134.193.156'
+          state: 'Succeeded'
+        }
+        {
+          id: HPCCluster03SN_R.id
+          action: 'Allow'
+          state: 'Succeeded'
+        }
+        {
+          id: HPCCluster04SN_R.id
+          action: 'Allow'
+          state: 'Succeeded'
         }
       ]
-    }
-  }
-}
-
-resource storageAccountNFS 'Microsoft.Storage/storageAccounts@2023-01-01' = {
-  name: cycleCloudNFSStorageAccountName
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-  properties: {
-    allowBlobPublicAccess: false
-    isHnsEnabled: true //required for NFS
-    isNfsV3Enabled: true
-    minimumTlsVersion: 'TLS1_2'
-    networkAcls: {
-      bypass: 'Logging, Metrics'
       defaultAction: 'Deny'
-      virtualNetworkRules: [
-        {
-          action: 'Allow'
-          id: cycleCloudSubnetID
-        }
-        {
-          action: 'Allow'
-          id: cluster01SubnetID
-        }
-      ]
       ipRules: [
         {
-          // put public IPs of peoble that need access to the storage account here
+          // put public IPs that data need access to the storage account here
           action: 'Allow'
-          value: '109.134.193.156'
+          value: StorageAccountExceptionIP
         }
       ]
     }
-  }
-}
-
-resource lockerPrivateEndpointStorageSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: lockerStorageAccountCycleCloudSubnetPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: storageSubnetID
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'myPrivateLinkServiceConnection'
-        properties: {
-          privateLinkServiceId: storageAccountLocker.id
-          groupIds: [
-            'blob'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource lockerPrivateEndpointCycleCloudSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: lockerStorageAccountStorageSubnetPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: cycleCloudSubnetID
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'myPrivateLinkServiceConnection'
-        properties: {
-          privateLinkServiceId: storageAccountLocker.id
-          groupIds: [
-            'blob'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource lockerPrivateEndpointCluster01SubnetSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: lockerStorageAccountCluster01SubnetPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: cluster01SubnetID
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'myPrivateLinkServiceConnection'
-        properties: {
-          privateLinkServiceId: storageAccountLocker.id
-          groupIds: [
-            'blob'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource nfsPrivateEndpointStorageSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: nfsStorageAccountCycleCloudSubnetPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: storageSubnetID
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'myPrivateLinkServiceConnection'
-        properties: {
-          privateLinkServiceId: storageAccountNFS.id
-          groupIds: [
-            'blob'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource nfsPrivateEndpointCycleCloudSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: nfsStorageAccountStorageSubnetPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: cycleCloudSubnetID
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'myPrivateLinkServiceConnection'
-        properties: {
-          privateLinkServiceId: storageAccountNFS.id
-          groupIds: [
-            'blob'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource nfsPrivateEndpointCluster01SubnetSubnet 'Microsoft.Network/privateEndpoints@2021-05-01' = {
-  name: nfsStorageAccountCluster01SubnetPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: cluster01SubnetID
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'myPrivateLinkServiceConnection'
-        properties: {
-          privateLinkServiceId: storageAccountNFS.id
-          groupIds: [
-            'blob'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-//not that clean to create them all individualu, but it works
-resource storageContainerCycleNFS 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = {
-  name: '${storageAccountNFS.name}/default/cyclenfs'
-  properties: {
-    publicAccess: 'None'
-  }
-}
-
-resource storageContainerproject1 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = {
-  name: '${storageAccountNFS.name}/default/project1'
-  properties: {
-    publicAccess: 'None'
-  }
-}
-
-resource storageContainerproject2 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${storageAccountNFS.name}/default/project2'
-  properties: {
-    publicAccess: 'None'
   }
 }

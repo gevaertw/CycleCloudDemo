@@ -1,58 +1,152 @@
 ###############################################################################
-# Check the parameters file for the correct values before running this script #
+# Check the parameters file for the correct values before running this script
+# See doc for more information on the parameters file
 ###############################################################################
 
-
 # Read the parameters file for use in this script
-$jsonContent = Get-Content -Raw -Path './Bicep/CycleCloudParameters.json'
+$jsonContent = Get-Content -Raw -Path './CycleCloudParameters.json'
 $parametersObj = ConvertFrom-Json $jsonContent
 
-# Display the parameters
-$location = $parametersObj.parameters.location.value
-Write-Host -ForegroundColor Green "Location: $location"
+$cycleCloudSubscriptionID = $parametersObj.parameters.cycleCloudSubscriptionID.value        
+$baseName = $parametersObj.parameters.baseName.value                                        
+$location = $parametersObj.parameters.location.value                                       
+$adminUsername = $parametersObj.parameters.adminusername.value                             
+$adminPassword = $parametersObj.parameters.adminPassword.value                              
+$cycleCloudNetworkRGName = $parametersObj.parameters.cycleCloudNetworkRGName.value         
+$cycleCloudVnetName = $parametersObj.parameters.cycleCloudVnetName.value                    
+$addressPrefixes = $parametersObj.parameters.addressPrefixes.value                          
+$cycleCloudSubnetName = $parametersObj.parameters.cycleCloudSubnetName.value                
+$cyclecloudSubnetPrefix = $parametersObj.parameters.cyclecloudSubnetPrefix.value           
+$storageSubnetName = $parametersObj.parameters.storageSubnetName.value                      
+$storageSubnetPrefix = $parametersObj.parameters.storageSubnetPrefix.value
+$bastionSubnetPrefix = $parametersObj.parameters.bastionSubnetPrefix.value
+$HPCCluster01SubnetName = $parametersObj.parameters.HPCCluster01SubnetName.value
+$HPCCluster01SubnetPrefix = $parametersObj.parameters.HPCCluster01SubnetPrefix.value
+$HPCCluster02SubnetName = $parametersObj.parameters.HPCCluster02SubnetName.value
+$HPCCluster02SubnetPrefix = $parametersObj.parameters.HPCCluster02SubnetPrefix.value
+$HPCCluster03SubnetName = $parametersObj.parameters.HPCCluster03SubnetName.value
+$HPCCluster03SubnetPrefix = $parametersObj.parameters.HPCCluster03SubnetPrefix.value
+$HPCCluster04SubnetName = $parametersObj.parameters.HPCCluster04SubnetName.value
+$HPCCluster04SubnetPrefix = $parametersObj.parameters.HPCCluster04SubnetPrefix.value
+$cycleCloudVMRGName = $parametersObj.parameters.cycleCloudVMRGName.value                                   
 $cycleCloudVMName = $parametersObj.parameters.cycleCloudVMName.value
-Write-Host -ForegroundColor Green "CycleCloud VM Name: $cycleCloudVMName"
-$cycleCloudVMRGName = $parametersObj.parameters.cycleCloudVMRGName.value
-Write-Host -ForegroundColor Green "CycleCloud VM Resource Group Name: $cycleCloudVMRGName"
-$managementSubscriptionID=$(az account show --query id --output tsv)
-Write-Host -ForegroundColor Green "Management Subscription ID: $managementSubscriptionID"
+$cycleCloudStorageRGName = $parametersObj.parameters.cycleCloudStorageRGName.value                                        
+$cycleCloudVMSize = $parametersObj.parameters.cycleCloudVMSize.value                                       
+$mgmtVMName = $parametersObj.parameters.mgmtVMName.value                                                    
 $cycleCloudLockerStorageAccountName = $parametersObj.parameters.cycleCloudLockerStorageAccountName.value
-Write-Host -ForegroundColor Green "CycleCloud Storage Account Name: $cycleCloudLockerStorageAccountName"
 $cycleCloudNFSStorageAccountName = $parametersObj.parameters.cycleCloudNFSStorageAccountName.value
-Write-Host -ForegroundColor Green "CycleCloud Storage Account Name: $cycleCloudNFSStorageAccountName"
+$StorageAccountExceptionIP = $parametersObj.parameters.StorageAccountExceptionIP.value
 
-Set-Location ./Bicep
-Write-Host -ForegroundColor Green Deploy the Azure resources using Bicep
+Write-Host -ForegroundColor Green "Select $cycleCloudSubscriptionID for deployment"
+az account set --subscription $cycleCloudSubscriptionID
+
+Write-Host -ForegroundColor Green Deploy the Azure Resource Groups using Bicep.
 az deployment sub create `
-    --name MyCycleCloudDeployment `
-    --template-file ./main.bicep `
+    --name CycleCloudDeployment_RGs `
     --location $location `
-    --parameters '@CycleCloudParameters.json'
-Write-Host -ForegroundColor Green create the custom role
+    --template-file ./bicep/resourceGroups.bicep `
+    --parameters `
+        cycleCloudVMRGName=$cycleCloudVMRGName `
+        cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
+        cycleCloudStorageRGName=$cycleCloudStorageRGName `
+        location=$location
+
+# in case you have the network predefined, you can skip the network deployment, just matke sure to fill in the parameter file with the correct values
+Write-Host -ForegroundColor Green Deploy the network using Bicep.
+az deployment group create `
+    --name CycleCloudDeployment_Network `
+    --resource-group $cycleCloudNetworkRGName `
+    --template-file ./bicep/network.bicep `
+    --parameters `
+        baseName=$baseName `
+        location=$location `
+        cycleCloudSubnetName=$cycleCloudSubnetName `
+        cycleCloudVnetName=$cycleCloudVnetName `
+        addressPrefixes=$addressPrefixes `
+        cyclecloudSubnetPrefix=$cyclecloudSubnetPrefix `
+        storageSubnetName=$storageSubnetName `
+        storageSubnetPrefix=$storageSubnetPrefix `
+        bastionSubnetPrefix=$bastionSubnetPrefix `
+        HPCCluster01SubnetName=$HPCCluster01SubnetName `
+        HPCCluster01SubnetPrefix=$HPCCluster01SubnetPrefix `
+        HPCCluster02SubnetName=$HPCCluster02SubnetName `
+        HPCCluster02SubnetPrefix=$HPCCluster02SubnetPrefix `
+        HPCCluster03SubnetName=$HPCCluster03SubnetName `
+        HPCCluster03SubnetPrefix=$HPCCluster03SubnetPrefix `
+        HPCCluster04SubnetName=$HPCCluster04SubnetName `
+        HPCCluster04SubnetPrefix=$HPCCluster04SubnetPrefix
+
+Write-Host -ForegroundColor Green "Deploy Cyclecloud using Bicep."
+az deployment group create `
+    --name CycleCloudDeployment_CycleCloud `
+    --resource-group $cycleCloudVMRGName `
+    --template-file ./bicep/cycleCloud.bicep `
+    --parameters `
+        location=$location `
+        cycleCloudVMName=$cycleCloudVMName `
+        virtualMachineSize=$cycleCloudVMSize `
+        adminUsername=$adminUsername `
+        adminPassword=$adminPassword `
+        cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
+        cycleCloudVnetName=$cycleCloudVnetName `
+        cycleCloudSubnetName=$cycleCloudSubnetName `
+        HPCCluster01SubnetName=$HPCCluster01SubnetName `
+        HPCCluster02SubnetName=$HPCCluster02SubnetName `
+        HPCCluster03SubnetName=$HPCCluster03SubnetName `
+        HPCCluster04SubnetName=$HPCCluster04SubnetName `
+        cycleCloudLockerStorageAccountName=$cycleCloudLockerStorageAccountName `
+        StorageAccountExceptionIP=$StorageAccountExceptionIP `
+        mgmtVMName=$mgmtVMName
+ 
+# cycleCloudNFSStorageAccountName=$cycleCloudNFSStorageAccountName `
+# storageSubnetName=$storageSubnetName `
+
+Write-Host -ForegroundColor Green "Deploy Cyclecloud NFS storage using Bicep."
+az deployment group create `
+  --name MyDeployment `
+  --resource-group $cycleCloudStorageRGName `
+  --template-file ./bicep/storage.bicep ` `
+  --parameters `
+        location=$location `
+        cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
+        cycleCloudVnetName=$cycleCloudVnetName `
+        cycleCloudSubnetName=$cycleCloudSubnetName `
+        storageSubnetName=$storageSubnetName `
+        HPCCluster01SubnetName=$HPCCluster01SubnetName `
+        HPCCluster02SubnetName=$HPCCluster02SubnetName `
+        HPCCluster03SubnetName=$HPCCluster03SubnetName `
+        HPCCluster04SubnetName=$HPCCluster04SubnetName `
+        StorageAccountExceptionIP=$StorageAccountExceptionIP `
+        cycleCloudNFSStorageAccountName=$cycleCloudNFSStorageAccountName
+
+Write-Host -ForegroundColor Green "Create the custom role."
     az deployment sub create `
     --name MyCycleCloudRoleDeployment `
-    --template-file ./cyclecloudRole.bicep `
+    --template-file ./Bicep/cyclecloudRole.bicep `
     --location $location
-Set-Location ..
 
-
-Write-Host -ForegroundColor Green grant the role to the identity of the cyclecloud VM
+Write-Host -ForegroundColor Green "Grant the role to the identity of the cyclecloud VM"
 $identityId=$(az resource list -n $cycleCloudVMName --query [*].identity.principalId --out tsv)
+
 Write-Host -ForegroundColor Green "Identity Id: $identityId"
-Write-Host -ForegroundColor Green Assign the role to the identity
+
+Write-Host -ForegroundColor Green "Assign the role to the identity"
 az role assignment create `
     --role 'Custom Role - CycleCloud system assigned identity' `
-    --assignee-object-id $identityId  `
+    --assignee-object-id $identityId `
     --assignee-principal-type ServicePrincipal `
-    --scope "/subscriptions/$managementSubscriptionID"
-Write-Host -ForegroundColor Green Grant the identity access to the storage accounts
+    --scope "/subscriptions/$cycleCloudSubscriptionID"
+
+Write-Host -ForegroundColor Green "Grant the identity access to the storage accounts"
 az role assignment create `
     --role 'Storage Blob Data Contributor' `
-    --assignee-object-id $identityId  `
+    --assignee-object-id $identityId `
     --assignee-principal-type ServicePrincipal `
-    --scope "/subscriptions/$managementSubscriptionID/resourceGroups/$cycleCloudVMRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudLockerStorageAccountName"
+    --scope "/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudVMRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudLockerStorageAccountName"
 az role assignment create `
     --role 'Storage Blob Data Contributor' `
-    --assignee-object-id $identityId  `
+    --assignee-object-id $identityId `
     --assignee-principal-type ServicePrincipal `
-    --scope "/subscriptions/$managementSubscriptionID/resourceGroups/$cycleCloudVMRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudNFSStorageAccountName"
+    --scope "/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudStorageRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudNFSStorageAccountName"
+
+Write-Host -ForegroundColor Green "$(Get-Date -Format 'HH:mm:ss') Deployment complete"

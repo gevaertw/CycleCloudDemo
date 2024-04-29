@@ -1,5 +1,3 @@
-//Avoid the use of this NSG in production, it allows all traffic in and out
-
 param location string = 'swedencentral'
 param nsgName string = 'Bastion-nsg'
 

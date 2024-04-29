@@ -1,4 +1,8 @@
 publicKey
 PublicKeyAdmin
 TODO.md
+CycleCloudParameters.json
 findspot.ps1
+findspot.sh
+checkSpot.ps1
+./tmp

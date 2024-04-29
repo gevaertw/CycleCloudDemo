@@ -5,9 +5,16 @@ bootcmd:
 
 #mounts:
 
-#packages:
+packages:
+- python39
+- jq
 
 #write_files:
 
 runcmd:
--  touch cloudinit_was_on_the_HPC_node.txt
+# Install the azNFS package
+- export AZNFS_NONINTERACTIVE_INSTALL=1
+- wget -O - -q https://github.com/Azure/AZNFS-mount/releases/latest/download/aznfs_install.sh | bash
+# Mount the cyclenfs NFS share that sits on the storage accounts, make sure to replace the storage account name with the actual one.
+- mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436864.blob.core.windows.net:/nfscyclesa8168kt436864/cyclenfs  /cyclenfs
+
