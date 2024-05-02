@@ -5,4 +5,4 @@ CycleCloudParameters.json
 findspot.ps1
 findspot.sh
 checkSpot.ps1
-./tmp
+./Bicep/tmp

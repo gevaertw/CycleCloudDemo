@@ -1,32 +1,20 @@
-# assumes you heve the azurecyclecloud cli installed (it is on the cyclecloud server)
-cyclecloudProjectFolderName=cyclecloudprojects
-cyclecloudProjectName=project01
-cyclecloudTemplateName=template01
+# Assumes you have the azurecyclecloud cli installed on the cyclecloud server.
+
+# Download an existing project to the current folder
+mkdir -p ./cyclecloudprojects
+cd ./cyclecloudprojects
+mkdir -p ./customSlurm
+cd ./customSlurm
+
+cyclecloud project fetch https://github.com/Azure/cyclecloud-slurm ./
 
 
-# find out what the locker is
-cyclecloud locker list
-
-# cd to the directory where you keep your templates, this is probably something like $HOME/cyclecloud_projects, if this is het first project, craete the directory in your home folder
-mkdir $HOME/$cyclecloudProjectFolderName
-cd $HOME/$cyclecloudProjectFolderName
-
-# Create a new project (you will need to know the locker name)
-cyclecloud project init $cyclecloudProjectName
-
-# Create a new template
-cd $HOME/$cyclecloudProjectFolderName/$cyclecloudProjectName
-cyclecloud project generate_template templates/$cyclecloudTemplateName.template.txt
-
-# edit the template file to your liking by editing the txt file
-nano templates/$cyclecloudTemplateName.template.txt
-
+# Edit the template file to your liking by editing the txt file, don't rename the file, dont change cluster names, etc.
+rm ./templates/slurm.txt
+nano ./templates/slurm.txt
+# or
+wget https://raw.githubusercontent.com/gevaertw/CycleCloudDemo/main/CycleTemplates/slurm.txt -O ./templates/slurm.txt
 
 #once the template is ready, import it to cyclecloud
-cyclecloud import_template -f $HOME/$cyclecloudProjectFolderName/$cyclecloudProjectName/templates/$cyclecloudTemplateName.template.txt
-cd $HOME/$cyclecloudProjectFolderName/$cyclecloudProjectName
+cyclecloud import_template --force -f ./templates/slurm.txt
 cyclecloud project upload
-cd $HOME
-
-#create a cluster based on the template
-cyclecloud create_cluster $cyclecloudProjectName 'New Cluster'

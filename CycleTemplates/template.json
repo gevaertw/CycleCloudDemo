@@ -1,0 +1,16 @@
+{
+    "Region" : "swedencentral",
+    "machine_type" : "Standard_D4v5",
+    "SchedulerMachineType" : "Standard_D4ads_v5",
+    "HPCMachineType" : "Standard_F2s_v2",
+    "ImageName": "almalinux8",
+    "SchedulerImageName" : "almalinux8",
+    "HPCImageName" : "almalinux8",
+    "configuration_slurm_disable_pmc" : true,
+    "UsePublicNetwork" : false,
+    "ExecuteNodesPublic" : false,
+    "Autoscale" : true,
+    "DynamicUseLowPrio" : true,
+    "DynamicSpotMaxPrice" : -1
+}
+

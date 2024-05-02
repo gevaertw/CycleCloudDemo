@@ -4,6 +4,7 @@ TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
 TESTFOLDER=Slurmtest02-$TIMESTAMP
 FULLPATH=$RESULTFOLDER/$TESTFOLDER
 JOBNAME=Snorlax
+PARTITIONNAME=hpc
 
 mkdir $FULLPATH
 echo "Results are stored in ${FULLPATH}."

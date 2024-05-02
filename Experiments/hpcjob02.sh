@@ -9,3 +9,4 @@ date
 echo Iteration ${iteration} : Slurm process $SLURM_PROCID is running on node $(hostname) and will wait for ${sleeptime} .
 sleep $sleeptime
 echo "Goodbye, Slurm world!"
+date

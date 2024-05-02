@@ -6,6 +6,7 @@ end = int(sys.argv[2])
 
 
 startTime = datetime.now()
+print ("start time: ", startTime)
 for num in range(start, end + 1):
    if num > 1:
        for i in range(2, int(num**0.5) + 1):
@@ -18,4 +19,4 @@ for num in range(start, end + 1):
 endTime = datetime.now()
 
 time_difference = endTime - startTime
-print("Time taken: ", time_difference)
+print("Job finished, total job time: ", time_difference)
