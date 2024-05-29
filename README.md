@@ -1,4 +1,5 @@
-Use at your own risk responsibility etc.  For POC purposes only, designed for functionality, not security.  Im not giving support, nor does my employer.
+# Warning
+Use at your own risk responsibility etc.  For POC purposes only, designed for functionality, not security.  Im not giving support, nor does my employer, unless I'm actualy on your project.  HPC can be expensive.  Watch your bill and 
 # What does this do? 
 Deploy a Cyclecloud cluster on Azure with additional components for simplified management and testing.
 # Known issue's
