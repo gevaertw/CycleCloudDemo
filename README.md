@@ -56,7 +56,7 @@ Deploy a Cyclecloud cluster on Azure with additional components for simplified m
 
 
 # Post deployment tasks:
-- Log on to the management Windows 11 workstation and run the following command:
+- Log on to the management Windows 11 workstation and run the following commands:
 
 ```
 ssh-keygen
@@ -74,8 +74,9 @@ copy the public key, and enter it when asked during the first deploy of CycleClo
   - Select the storage account created earlier, witch name starts with lock
   - Accept the marketplace terms
 
-## Initialize the CycleCloud CLI and api (optional)
-Log on to the CycleCloud server using Bastion and run the following command:
+## Initialize the CycleCloud CLI and api
+This step is required to use the CLI and the API, eg to change the templates or to create a new cluster from CLI.
+- Log on to the CycleCloud server using Bastion and run the following command:
 
 ```bash 
 cyclecloud initialize
@@ -138,14 +139,21 @@ If  you have just created a subscription, you will have to wait a few minutes be
   - Cloud init logs: /var/log/cloud-init-output.log
   - slurm install logs: /var/log/azure-slurm-install.log
 
-## prepare for testing
-These steps are executed only once per deployment of a cyclecloud envirponment
+## The most basic test
+On the sheduler execute following command:
+```bash
+srun -N5 -l /bin/hostname
+```
+This will start 5 tasks on the cluster, and return the hostname of the node where the task is running.
+## Prepare for testing longer running jobs from the NFS share
+These steps are executed only once per deployment of a cyclecloud environment
 - Log on to the scheduler node using ssh
-- Run the following commands to prepare the environment for testing
+- Run the commands in the script to prepare the environment for testing.  The script is in this repo, not on the server.
+- 
 ```bash
 nfsInitialize.sh
 ```
-- This will populate the NFS share with the required files for the tests and download all experiments to the NFS share.
+- This will populate the NFS share with the required files for the tests and download all experiments to the NFS share and set all permissions.
 
 ## Run an experiment
 - From the management workstation, log on to the scheduler node using ssh
@@ -170,16 +178,55 @@ nfsInitialize.sh
 So, if you want a full clean start, delete the cluster, and create a new one.
 
 # Customize a cluster
-
 - Assumes you have the azurecyclecloud cli installed on the cyclecloud server.
-- Download an existing project to the current folder
-```bash 
-cyclecloud project fetch https://github.com/Azure/cyclecloud-slurm ./
+- Check the cyclecloud locker used, and set it as default
+- Commands & scripts need more work, but this is the general idea
+
+## Before you start
+The next set of commands require AZ Copy to be installed on the CycleCloud server.  This is installed by default, but only root has access
+```bash
+sudo chmod 777 /usr/local/cyclecloud-cli/embedded/bin/azcopy
 ```
-- Edit the template file to your liking by editing the txt file, don't rename the file, don't change cluster names, and watch out for indentation etc.
-- Once the template is ready, import it to cyclecloud
+
+## Create a new project 
+- Pre configure the locker
+
+```bash
+PROJECTNAME=MyProject
+LOCKER=$(cyclecloud locker list | cut -d' ' -f1)                    # Get the locker name
+cyclecloud project init $PROJECTNAME
+cd $PROJECTNAME
+cyclecloud project default_locker $LOCKER --global
+cyclecloud project fetch https://github.com/Azure/cyclecloud-slurm ./
+
+```
+- Stay in the same directory or adapt the paths in the below commands
+- Edit the template file in ./templates/slurm.txt to your liking by editing the txt file, don't rename the file, don't change cluster names, and watch out for indentation etc.
+- Instead of editing the file you can download the file from the repo and overwrite the existing file.
+- Once the template is ready, import it to cyclecloud, with following commands:
+
 ```bash 
 cyclecloud import_template --force -f ./templates/slurm.txt
 cyclecloud project upload
+cd ..
 ```
+## delete the cluster template
+- If you want to delete the cluster template, you can do so with the following command:
+
+```bash
+cyclecloud delete_template Slurm
+```
+
+Read more about the cyclecloud commands here: https://learn.microsoft.com/en-us/azure/cyclecloud/cli?view=cyclecloud-8
+
+# Spot instance operations
+using the script evictSpot.sh you can simulate eviction of spot instances from the cluster.
+
+# CycleCloud maintenance
+## Update CycleCloud
+- Follow the redhat instructions from the page below
+https://learn.microsoft.com/en-us/azure/cyclecloud/how-to/upgrade-and-migrate?view=cyclecloud-8
+
+
+
 
