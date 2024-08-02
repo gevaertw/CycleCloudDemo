@@ -80,6 +80,21 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
           direction: 'Outbound'
         }
       }
+      {
+        name: 'Allow-MySQL_3306_outbound'
+        properties: {
+          description: 'Allows internet access'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3306'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          access: 'Allow'
+          priority: 1103
+          direction: 'Outbound'
+        }
+      }
+      
     ]
   }
 }

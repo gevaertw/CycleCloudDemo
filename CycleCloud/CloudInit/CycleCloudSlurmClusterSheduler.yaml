@@ -8,6 +8,7 @@ bootcmd:
 packages:
 - python39
 - jq
+- tmux
 
 #write_files:
 

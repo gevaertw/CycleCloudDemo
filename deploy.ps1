@@ -7,12 +7,25 @@
 $jsonContent = Get-Content -Raw -Path './CycleCloudParameters.json'
 $parametersObj = ConvertFrom-Json $jsonContent
 
+
+# some basic stuff
+$baseName = $parametersObj.parameters.baseName.value  
 $cycleCloudSubscriptionID = $parametersObj.parameters.cycleCloudSubscriptionID.value        
-$baseName = $parametersObj.parameters.baseName.value                                        
-$location = $parametersObj.parameters.location.value                                       
-$adminUsername = $parametersObj.parameters.adminusername.value                             
-$adminPassword = $parametersObj.parameters.adminPassword.value                              
+$location = $parametersObj.parameters.location.value
+
+# Resource Group Names                                       
 $cycleCloudNetworkRGName = $parametersObj.parameters.cycleCloudNetworkRGName.value         
+$cycleCloudVMRGName = $parametersObj.parameters.cycleCloudVMRGName.value                                   
+$cycleCloudStorageRGName = $parametersObj.parameters.cycleCloudStorageRGName.value                                        
+$cycleCloudCostingRGName = $parametersObj.parameters.cycleCloudCostingRGName.value    
+$cycleCloudMonitoringRGName = $parametersObj.parameters.cycleCloudMonitoringRGName.value                                    
+
+# VM settings
+$adminUsername = $parametersObj.parameters.adminusername.value                             
+$adminPassword = $parametersObj.parameters.adminPassword.value                                
+$mgmtVMName = $parametersObj.parameters.mgmtVMName.value
+
+# Network settings                              
 $cycleCloudVnetName = $parametersObj.parameters.cycleCloudVnetName.value                    
 $addressPrefixes = $parametersObj.parameters.addressPrefixes.value                          
 $cycleCloudSubnetName = $parametersObj.parameters.cycleCloudSubnetName.value                
@@ -28,14 +41,27 @@ $HPCCluster03SubnetName = $parametersObj.parameters.HPCCluster03SubnetName.value
 $HPCCluster03SubnetPrefix = $parametersObj.parameters.HPCCluster03SubnetPrefix.value
 $HPCCluster04SubnetName = $parametersObj.parameters.HPCCluster04SubnetName.value
 $HPCCluster04SubnetPrefix = $parametersObj.parameters.HPCCluster04SubnetPrefix.value
-$cycleCloudVMRGName = $parametersObj.parameters.cycleCloudVMRGName.value                                   
+
+# Cyclecloud settings
 $cycleCloudVMName = $parametersObj.parameters.cycleCloudVMName.value
-$cycleCloudStorageRGName = $parametersObj.parameters.cycleCloudStorageRGName.value                                        
-$cycleCloudVMSize = $parametersObj.parameters.cycleCloudVMSize.value                                       
-$mgmtVMName = $parametersObj.parameters.mgmtVMName.value                                                    
+$cycleCloudVMSize = $parametersObj.parameters.cycleCloudVMSize.value     
 $cycleCloudLockerStorageAccountName = $parametersObj.parameters.cycleCloudLockerStorageAccountName.value
+
+# Storage account NFS settings
 $cycleCloudNFSStorageAccountName = $parametersObj.parameters.cycleCloudNFSStorageAccountName.value
 $StorageAccountExceptionIP = $parametersObj.parameters.StorageAccountExceptionIP.value
+
+# Costing database settings
+$costingDBSeverName = $parametersObj.parameters.costingDBSeverName.value
+$costingDBName = $parametersObj.parameters.costingDBName.value
+$costingDBskuName = $parametersObj.parameters.costingDBskuName.value
+$costingDBskuTier = $parametersObj.parameters.costingDBskuTier.value
+
+# Monitoring settings
+$monitoringUserAssignedIdentityName = $parametersObj.parameters.monitoringUserAssignedIdentityName.value
+$monitoringGrafanaName = $parametersObj.parameters.monitoringGrafanaName.value
+$monitoringPrometheusName = $parametersObj.parameters.monitoringPrometheusName.value
+
 
 Write-Host -ForegroundColor Green "Select $cycleCloudSubscriptionID for deployment"
 az account set --subscription $cycleCloudSubscriptionID
@@ -49,9 +75,10 @@ az deployment sub create `
         cycleCloudVMRGName=$cycleCloudVMRGName `
         cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
         cycleCloudStorageRGName=$cycleCloudStorageRGName `
+        cycleCloudCostingRGName=$cycleCloudCostingRGName `
         location=$location
 
-# in case you have the network predefined, you can skip the network deployment, just matke sure to fill in the parameter file with the correct values
+# in case you have the network predefined, you can skip the network deployment, just make sure to fill in the parameter file with the correct values
 Write-Host -ForegroundColor Green Deploy the network using Bicep.
 az deployment group create `
     --name CycleCloudDeployment_Network `
@@ -76,6 +103,9 @@ az deployment group create `
         HPCCluster04SubnetName=$HPCCluster04SubnetName `
         HPCCluster04SubnetPrefix=$HPCCluster04SubnetPrefix
 
+# At some point the NSG's should be split out here, but for now they are in the network.bicep file
+
+
 Write-Host -ForegroundColor Green "Deploy Cyclecloud using Bicep."
 az deployment group create `
     --name CycleCloudDeployment_CycleCloud `
@@ -97,6 +127,26 @@ az deployment group create `
         cycleCloudLockerStorageAccountName=$cycleCloudLockerStorageAccountName `
         StorageAccountExceptionIP=$StorageAccountExceptionIP `
         mgmtVMName=$mgmtVMName
+
+
+
+Write-Host -ForegroundColor Green "Deploy Cyclecloud costing database using Bicep."
+az deployment group create `
+    --name CycleCloudDeployment_CycleCloud `
+    --resource-group $cycleCloudCostingRGName `
+    --template-file ./bicep/cycleCloudCosting.bicep `
+    --parameters `
+        location=$location `
+        cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
+        cycleCloudVnetName=$cycleCloudVnetName `
+        cycleCloudSubnetName=$cycleCloudSubnetName `
+        costingDBSeverName=$costingDBSeverName `
+        costingDBName=$costingDBName `
+        adminPassword=$adminPassword
+        costingDBskuName=$costingDBskuName
+        costingDBskuTier=$costingDBskuTier
+
+
  
 # cycleCloudNFSStorageAccountName=$cycleCloudNFSStorageAccountName `
 # storageSubnetName=$storageSubnetName `

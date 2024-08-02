@@ -26,6 +26,9 @@
         "cycleCloudStorageRGName": {
             "value": ""
         },
+        "cycleCloudCostingRGName": {
+            "value": ""
+        },
         "cycleCloudVnetName": {
             "value": ""
         },

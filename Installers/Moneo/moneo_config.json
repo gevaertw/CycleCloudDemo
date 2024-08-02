@@ -1,0 +1,28 @@
+{
+    "exporter_config": {
+        "gpu_sample_interval": "60",
+        "gpu_profiling": "false"
+    },
+    "prom_config": {
+        "IDENTITY_CLIENT_ID": "677c8afa-7d1e-4ed8-8e3b-17c5ce47cd9d",
+        "INGESTION_ENDPOINT": "https://cyclecloudpoc-prometheus-sjar.swedencentral-1.metrics.ingest.monitor.azure.com/dataCollectionRules/dcr-b0c7cc86a43b4379ae895f59b596c660/streams/Microsoft-PrometheusMetrics/api/v1/write?api-version=2023-04-24"
+    },
+    "geneva_config": {
+        "AccountName": "<account name>",
+        "MDMEndPoint": "<endpoint>",
+        "UmiObjectId": "<object ID>"
+    },
+    "publisher_config": {
+        "common_config": {
+            "metrics_ports": "8000,8001,8002",
+            "metrics_namespace": "<metrics_namespace>",
+            "interval": "20"
+        },
+        "geneva_agent_config": {
+            "metrics_account": "<metrics_account>"
+        },
+        "azure_monitor_agent_config": {
+            "connection_string": "<connectionString>"
+        }
+    }
+}

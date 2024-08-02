@@ -5,6 +5,9 @@ Deploy a Cyclecloud cluster on Azure with additional components for simplified m
 # Known issue's
 - Not anymore :)
 
+# Linux
+- There are lots of linux flavours out there.  This POC is based on Alma Linux, but should work on any RHEL based system.
+
 # Architecture overview
 <img src="./Doc/draw/overview.drawio.svg">
 
@@ -46,6 +49,7 @@ Deploy a Cyclecloud cluster on Azure with additional components for simplified m
 - cycleCloudLockerStorageAccountName: The name of the storage account where the CycleCloud locker will be stored
 - cycleCloudNFSStorageAccountName: The name of the storage account where the shared NFS storage will be stored
 - StorageAccountExceptionIP: The IP address that is allowed to access the storage account, typicaly used for admin purposes
+- costingDBSeverName: The name of the costing database server, it must be lowercase
 
 ...
 
@@ -193,7 +197,8 @@ sudo chmod 777 /usr/local/cyclecloud-cli/embedded/bin/azcopy
 
 ```bash
 PROJECTNAME=MyProject
-LOCKER=$(cyclecloud locker list | cut -d' ' -f1)                    # Get the locker name
+# Get the locker name
+LOCKER=$(cyclecloud locker list | cut -d' ' -f1)
 cyclecloud project init $PROJECTNAME
 cd $PROJECTNAME
 cyclecloud project default_locker $LOCKER --global
@@ -228,5 +233,14 @@ using the script evictSpot.sh you can simulate eviction of spot instances from t
 https://learn.microsoft.com/en-us/azure/cyclecloud/how-to/upgrade-and-migrate?view=cyclecloud-8
 
 
+# Monitoring using Moneo
+## install the az CLI
+You need the az CLI installed to install the Moneo infrastructure,
+execute the script ```azCliInstallAlma.sh``` or the equivalent for your ubuntu version if required from this repo.
+## Install Moneo
+Continue by installing the Moneo infrastructure, you need to execute this only once. follow along with these steps:
 
+https://github.com/Azure/Moneo/blob/main/deploy_managed_infra/README.md
+
+the installer can be found in ```/opt/azurehpc/tools/Moneo/deploy_managed_infra```
 

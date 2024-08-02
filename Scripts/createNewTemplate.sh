@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Assumes you have the azurecyclecloud cli installed on the cyclecloud server.
 
 # Download an existing project to the current folder

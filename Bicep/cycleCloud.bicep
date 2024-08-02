@@ -18,6 +18,8 @@ param cycleCloudVMName string
 param virtualMachineSize string
 param mgmtVMName string
 
+
+
 resource cycleCloudvNet_R 'Microsoft.Network/virtualNetworks@2022-11-01' existing = {
   name: cycleCloudVnetName
   scope: resourceGroup(cycleCloudNetworkRGName)
@@ -180,7 +182,7 @@ resource mgmtVM_R 'Microsoft.Compute/virtualMachines@2021-07-01' = {
   }
 }
 
-// Storage accounts
+// Storage account
 resource storageAccountLocker_R 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: cycleCloudLockerStorageAccountName
   location: location
@@ -236,3 +238,4 @@ resource storageAccountLocker_R 'Microsoft.Storage/storageAccounts@2023-01-01' =
     }
   }
 }
+

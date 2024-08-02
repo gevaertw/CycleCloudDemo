@@ -50,6 +50,20 @@ resource newNSG 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
           direction: 'Inbound'
         }
       }
+      {
+        name: 'Allow-MySQL_3306_inbound'
+        properties: {
+          description: 'Allows SSH to costing database'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3306'
+          sourceAddressPrefix: 'VirtualNetwork'
+          destinationAddressPrefix: 'VirtualNetwork'
+          access: 'Allow'
+          priority: 1107
+          direction: 'Inbound'
+        }
+      }
 //OUTBOUND RULES -------------------------------------------------------------------------------------------------------
       {
         name: 'Allow-AzureStorage_443_outbound'
