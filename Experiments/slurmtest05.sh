@@ -3,7 +3,7 @@ RESULTFOLDER=/cyclenfs/results
 TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
 TESTFOLDER=Slurmtest04-$TIMESTAMP
 FULLPATH=$RESULTFOLDER/$TESTFOLDER
-JOBNAME=PrimeNumbers_Parallel
+JOBNAME=Prime_Parallel_$TIMESTAMP
 PARTITIONNAME=htc
 
 mkdir $FULLPATH

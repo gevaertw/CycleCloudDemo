@@ -199,4 +199,19 @@ az role assignment create `
     --assignee-principal-type ServicePrincipal `
     --scope "/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudStorageRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudNFSStorageAccountName"
 
-Write-Host -ForegroundColor Green "$(Get-Date -Format 'HH:mm:ss') Deployment complete"
+# Monitoring
+# deploy the User assigned identity
+
+# Deploy the prometheus
+
+# Deploy the grafana
+
+
+
+
+# WIP this is not correct / tested yet
+# az policy definition create --name "vmssUserAssignedIdentityPolicy" --display-name "VMSS User Assigned Identity Policy" --description "Ensure VMSS have user assigned identity for Moneo monitoring" --rules vmssUserAssignedIdentityPolicy.json --mode Indexed 
+# az policy assignment create --name "vmssUserAssignedIdentityPolicyAssignment" --policy "vmssUserAssignedIdentityPolicy" --scope "/subscriptions/$cycleCloudSubscriptionID" --params "{ \"userAssignedIdentities\": { \"value\": \"/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudMonitoringRGName/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$monitoringUserAssignedIdentityName\" } }"
+
+Write-Host -ForegroundColor Green "$(Get-Date -Format 'HH:mm:ss') Deployment complete take note of these values:"
+# Write-Host -ForegroundColor Cyan "Moneo managed identity: $cycleCloudVMName"
