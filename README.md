@@ -155,13 +155,14 @@ These steps are executed only once per deployment of a cyclecloud environment
 - Run the commands in the script to prepare the environment for testing.  The script is in this repo, not on the server.
 - 
 ```bash
-nfsInitialize.sh
+
+git clone https://github.com/gevaertw/CycleCloudDemo.git
 ```
 - This will populate the NFS share with the required files for the tests and download all experiments to the NFS share and set all permissions.
 
 ## Run an experiment
 - From the management workstation, log on to the scheduler node using ssh
-- In the folder /experiments you will find 3 scripts called slurmtest0N.sh
+- In the folder /Experiments you will find some scripts called slurmtest0N.sh
   - slurmtest01.sh is a simple script that will run a single job on the cluster using srun
   - slurmtest02.sh is a more complex script that will run multiple jobs on the cluster using sbatch
   - slurmtest03.sh is a script that will start multiple batch jobs, it calculates prime numbers, and on regular VM's it will run for a long time, when investigating 1.000.000.000 numbers.
