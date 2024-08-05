@@ -24,6 +24,7 @@ Autoscale = $Autoscale
     Region = $Region
     KeyPairLocation = ~/.ssh/cyclecloud.pem
     Azure.Identities = $ManagedIdentity
+    ComputerNamePrefix = $NodeNamePrefix
     
     # Slurm autoscaling supports both Terminate and Deallocate shutdown policies
     ShutdownPolicy = $configuration_slurm_shutdown_policy
@@ -314,6 +315,13 @@ Order = 10
         Description = Enter a Project Name Azure tag here
         ParameterType = String
         DefaultValue = Project01
+        Required = False
+
+        [[[parameter NodeNamePrefix]]]
+        Label = Node name prefix
+        Description = Enter a prefix for all nodes in this cluster here
+        ParameterType = String
+        DefaultValue = NodeNamePrefix-
         Required = False
 
     
