@@ -1,0 +1,12 @@
+[Unit]
+Description=Moneo exporter service for Azure Monitor
+After=network.target
+
+[Service]
+Type=simple
+Restart=yes
+ExecStart=/usr/bin/python3 /tmp/moneo-worker/publisher/metrics_publisher.py azure_monitor
+User=root
+
+[Install]
+WantedBy=multi-user.target

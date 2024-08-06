@@ -6,3 +6,4 @@ findspot.ps1
 findspot.sh
 checkSpot.ps1
 ./Bicep/tmp
+CostingDBLogin.txt

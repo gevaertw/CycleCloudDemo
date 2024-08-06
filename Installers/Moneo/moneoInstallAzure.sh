@@ -4,7 +4,7 @@
 
 # Run this script on all nodes in the scale set, by starting it from the cyclecloud cloud init script
 
-# run once per scale set
+# run once per scale set if you don't have  an azure policy that assigns the identity to the VMSS (Using a policy is the recommended way)
 scaleSetName=htc-5hggnrljtvfmx
 cycleCloudMonitoringRGName=CycleCloudPOC-moneo-rg
 resourceGroupScaleSet=alma-01-Costing-G43WEZDEMU2WCLJYGIZDELJUMM
