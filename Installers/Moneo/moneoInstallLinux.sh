@@ -11,7 +11,7 @@ yes | \cp /cyclenfs/CycleCloudDemo/Installers/Moneo/moneo_publisher.service /etc
 
 # Start the service delayed by 5 minutes to allow the VM to fully boot up and to avoid that cluster init will kill the service by restarting the network, altough this works I don't think it's nice
 at now + 5 minutes -f /opt/azurehpc/tools/Moneo/linux_service/start_moneo_services.sh
-# /opt/azurehpc/tools/Moneo/linux_service/start_moneo_services.sh
+
 
 # fix in systemctl
 # /opt/azurehpc/tools/Moneo/linux_service/start_moneo_services.sh
