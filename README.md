@@ -68,6 +68,15 @@ type .\.ssh\id_rsa.pub
 ```
 copy the public key, and enter it when asked during the first deploy of CycleCloud.
 
+- In the folder .ssh in your home directory, create a file called config with the following content:
+```
+# Disable HostKey checking for servers which frequently change keys
+Host *
+    UserKnownHostsFile /dev/null
+    StrictHostKeyChecking no
+```
+- This will disable the host key checking for all servers, since VM's get constantly redeployed in this POC, the host signatures change all the time, and this will prevent the ssh client from asking if you trust the host, or block you if the signature has changed.
+
 ## CycleCloud setup
 - Open a browser and go to the CycleCloud server's IP address using http (not https) 
 - Choose a site name 
@@ -155,7 +164,6 @@ These steps are executed only once per deployment of a cyclecloud environment
 - Run the commands in the script to prepare the environment for testing.  The script is in this repo, not on the server.
 - 
 ```bash
-
 git clone https://github.com/gevaertw/CycleCloudDemo.git
 ```
 - This will populate the NFS share with the required files for the tests and download all experiments to the NFS share and set all permissions.

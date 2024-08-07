@@ -1,20 +1,25 @@
 #!/bin/bash
 # root is assumed here.  (if running from cloud init, you are root, if not run sudo -i)
 
-dnf makecache --refresh
-# install X11
-dnf -y install xorg-x11-server-utils
-dnf -y install xorg-x11-xauth
-echo "X11Forwarding yes" > /etc/ssh/ssh_config.d/X11Forwarding.conf
+yum groupinstall -y "Server with GUI" --skip-broken
+yum install -y epel-release
+systemctl disable firewalld --now
 
-# install Firefox
-dnf -y install firefox
+yum groupinstall -y xfce
+yum install -y xrdp
 
-# install vscode (not working yet) 
-dnf makecache --refresh
-dnf -y groupinstall "Development Tools"
+echo "exec /usr/bin/xfce4-session" >> ~/.xinitrc
+systemctl set-default graphical
+
+systemctl enable xrdp
+systemctl start xrdp
+
+# vscode
+dnf update -y
+dnf groupinstall "Development Tools" -y
+rpm --import https://packages.microsoft.com/keys/microsoft.asc
 printf "[vscode]\nname=packages.microsoft.com\nbaseurl=https://packages.microsoft.com/yumrepos/vscode/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscode.repo
-dnf -y install code
+dnf update -y
+dnf install code -y
 
-# restart some servcies
-systemctl restart sshd
+
