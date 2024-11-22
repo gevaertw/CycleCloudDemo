@@ -5,11 +5,11 @@ TESTFOLDER=Slurmtest05-$TIMESTAMP
 FULLPATH=$RESULTFOLDER/$TESTFOLDER
 JOBNAME=Prime_Parallel_short_$TIMESTAMP
 PARTITIONNAME=htc
+MINNODES=5
+MAXNODES=10
 
 mkdir $FULLPATH
 echo "Results are stored in ${FULLPATH}."
 
-
-# Job Steps
-sbatch  --job-name=$JOBNAME --output=$FULLPATH/%x_%j_out.txt --error=$FULLPATH/%x_%j_err.txt --cpus-per-task=1 --array=0-99 --partition=$PARTITIONNAME ./hpcjob05_short.sh 
-
+# Job submission
+sbatch  --job-name=$JOBNAME --output=$FULLPATH/%x_%j_out.txt --error=$FULLPATH/%x_%j_err.txt --cpus-per-task=1 --nodes=$MINNODES --array=0-99 --partition=$PARTITIONNAME ./hpcjob05_short.sh 
