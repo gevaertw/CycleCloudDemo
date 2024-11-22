@@ -14,4 +14,11 @@ mkdir $FULLOUTPUTPATH
 echo "Results are stored in ${FULLOUTPUTPATH}."
 
 # Job submission
-sbatch  --job-name=$JOBNAME --output=$FULLOUTPUTPATH/%x_%j_out.txt --error=$FULLOUTPUTPATH/%x_%j_err.txt --cpus-per-task=1 --nodes=$MINNODES-$MAXNODES --array=0-99 --partition=$PARTITIONNAME ./hpcjob05_short.sh 
+sbatch --job-name=$JOBNAME \
+    --output=$FULLOUTPUTPATH/%x_%j_out.txt \
+    --error=$FULLOUTPUTPATH/%x_%j_err.txt \
+    --cpus-per-task=1 \
+    --nodes=$MAXNODES \
+    --array=0-99 \
+    --partition=$PARTITIONNAME \
+    ./hpcjob05_short.sh 

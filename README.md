@@ -239,14 +239,5 @@ using the script evictSpot.sh you can simulate eviction of spot instances from t
 https://learn.microsoft.com/en-us/azure/cyclecloud/how-to/upgrade-and-migrate?view=cyclecloud-8
 
 
-# Monitoring using Moneo
-## install the az CLI
-You need the az CLI installed to install the Moneo infrastructure,
-execute the script ```azCliInstallAlma.sh``` or the equivalent for your ubuntu version if required from this repo.
-## Install Moneo
-Continue by installing the Moneo infrastructure, you need to execute this only once. follow along with these steps:
 
-https://github.com/Azure/Moneo/blob/main/deploy_managed_infra/README.md
-
-the installer can be found in ```/opt/azurehpc/tools/Moneo/deploy_managed_infra```
 

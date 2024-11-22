@@ -29,5 +29,3 @@ runcmd:
 - mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436884.blob.core.windows.net:/nfscyclesa8168kt436884/cyclenfs  /cyclenfs
 # Configure & run Moneo monitor (keep this line last)
 - /cyclenfs/CycleCloudDemo/Installers/Moneo/moneoInstallLinux.sh
-
-

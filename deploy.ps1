@@ -212,14 +212,6 @@ az role assignment create `
     --scope "/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudStorageRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudNFSStorageAccountName"
 
 # Monitoring
-# deploy the User assigned identity
-
-# Deploy the prometheus
-
-# Deploy the grafana
-
-# Link the grafana to the prometheus
-
 
 # WIP this is not correct / tested yet
 # az policy definition create --name "vmssUserAssignedIdentityPolicy" --display-name "VMSS User Assigned Identity Policy" --description "Ensure VMSS have user assigned identity for Moneo monitoring" --rules vmssUserAssignedIdentityPolicy.json --mode Indexed 
