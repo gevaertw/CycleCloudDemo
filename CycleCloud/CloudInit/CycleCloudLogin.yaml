@@ -1,16 +1,23 @@
 #cloud-config
 timezone: Europe/Brussels
 
-# hpc htc node configuration for the CycleCloud Slurm Cluster
+# Login node configuration for the CycleCloud Slurm Cluster
+
+# password for these users: "DevDesk_45" choose something else :)  The passwd below is encrypted.
+users:
+- name: desktop01
+  passwd: "$6$mapydqZujtX3R.eu$qcPZHXukedd4QtsunU3vByg6UFXZsJMm4NwPrYxYbgSBNA3IWRpSke5d9ek2S984niyfcmEJH.zJnTVzTVHU5."
+  shell: /bin/bash
+  lock-passwd: false
+  ssh_pwauth: True
+  chpasswd: { expire: False }
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  groups: users, admin
 
 # There is a key issue in the current Alma Linux images, https://github.com/Azure/cyclecloud-slurm/issues/214
 # seems resolved now commented out for deletion later on..
 #bootcmd:
 #- rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
-# bootcmd:
-# the following line disables hyper-threading, some HPC workloads may benefit from this
-# - for cpunum in $(cat /sys/devices/system/cpu/cpu*/topology/thread_siblings_list | cut -s -d- -f2- | tr ',' '\n' | sort -un); do echo 0 > /sys/devices/system/cpu/cpu$cpunum/online; done
-
 
 #mounts:
 
@@ -18,6 +25,7 @@ packages:
 - python39
 - jq
 - tmux
+- nano
 
 #write_files:
 
@@ -29,5 +37,9 @@ runcmd:
 - mkdir -p /cyclenfs
 - chmod -R 755 /cyclenfs
 - mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436884.blob.core.windows.net:/nfscyclesa8168kt436884/cyclenfs  /cyclenfs
-# Configure & run Moneo monitor
+# Add GUI
+- /cyclenfs/CycleCloudDemo/Installers/Alma/guiInstallAlma.sh
+# Configure & run Moneo monitor (keep this line last)
 - /cyclenfs/CycleCloudDemo/Installers/Moneo/moneoInstallLinux.sh
+
+

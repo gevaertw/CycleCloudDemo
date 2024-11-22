@@ -2,6 +2,7 @@ param cycleCloudVMRGName string
 param cycleCloudNetworkRGName string
 param cycleCloudStorageRGName string
 param cycleCloudCostingRGName string
+param cycleCloudMonitoringRGName string
 param location string
 
 targetScope = 'subscription'
@@ -26,4 +27,7 @@ resource cycleCloudCostingRG_R 'Microsoft.Resources/resourceGroups@2021-04-01' =
   location: location
 }
 
- 
+resource cycleCloudMonitoringRGName_R 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: cycleCloudMonitoringRGName
+  location: location
+}

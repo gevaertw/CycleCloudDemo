@@ -8,10 +8,12 @@ $jsonContent = Get-Content -Raw -Path './CycleCloudParameters.json'
 $parametersObj = ConvertFrom-Json $jsonContent
 
 
-# some basic stuff
-$baseName = $parametersObj.parameters.baseName.value  
+# Some basic stuff
+$baseName = $parametersObj.parameters.baseName.value
+$cycleCloudTenantID = $parametersObj.parameters.cycleCloudTenantID.value  
 $cycleCloudSubscriptionID = $parametersObj.parameters.cycleCloudSubscriptionID.value        
 $location = $parametersObj.parameters.location.value
+$cycleCloudServicePrincipalName = $parametersObj.parameters.cycleCloudServicePrincipalName.value
 
 # Resource Group Names                                       
 $cycleCloudNetworkRGName = $parametersObj.parameters.cycleCloudNetworkRGName.value         
@@ -63,8 +65,15 @@ $monitoringGrafanaName = $parametersObj.parameters.monitoringGrafanaName.value
 $monitoringPrometheusName = $parametersObj.parameters.monitoringPrometheusName.value
 
 
-Write-Host -ForegroundColor Green "Select $cycleCloudSubscriptionID for deployment"
+Write-Host -ForegroundColor Green "Select $cycleCloudSubscriptionID for deployment in tenant $cycleCloudTenantID"
+az login --tenant $cycleCloudTenantID
 az account set --subscription $cycleCloudSubscriptionID
+
+# This is do be done only once per subscription, if you have done this before you can comment this step out (it does not hurt to run it again, its just not needed)
+Write-Host -ForegroundColor Green "Register the required providers, accept the terms and conditions for the Cyclecloud VM"
+az provider register --namespace Microsoft.Network
+az vm image terms accept --publisher azurecyclecloud --offer azure-cyclecloud --plan cyclecloud8-gen2
+# End only once steps
 
 Write-Host -ForegroundColor Green Deploy the Azure Resource Groups using Bicep.
 az deployment sub create `
@@ -76,6 +85,7 @@ az deployment sub create `
         cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
         cycleCloudStorageRGName=$cycleCloudStorageRGName `
         cycleCloudCostingRGName=$cycleCloudCostingRGName `
+        cycleCloudMonitoringRGName=$cycleCloudMonitoringRGName `
         location=$location
 
 # in case you have the network predefined, you can skip the network deployment, just make sure to fill in the parameter file with the correct values
@@ -129,7 +139,7 @@ az deployment group create `
         mgmtVMName=$mgmtVMName
 
 
-
+# Costing database
 Write-Host -ForegroundColor Green "Deploy Cyclecloud costing database using Bicep."
 az deployment group create `
     --name CycleCloudDeployment_CycleCloud `
@@ -142,20 +152,16 @@ az deployment group create `
         cycleCloudSubnetName=$cycleCloudSubnetName `
         costingDBSeverName=$costingDBSeverName `
         costingDBName=$costingDBName `
-        adminPassword=$adminPassword
-        costingDBskuName=$costingDBskuName
+        adminPassword=$adminPassword `
+        costingDBskuName=$costingDBskuName `
         costingDBskuTier=$costingDBskuTier
 
-
- 
-# cycleCloudNFSStorageAccountName=$cycleCloudNFSStorageAccountName `
-# storageSubnetName=$storageSubnetName `
 
 Write-Host -ForegroundColor Green "Deploy Cyclecloud NFS storage using Bicep."
 az deployment group create `
   --name MyDeployment `
   --resource-group $cycleCloudStorageRGName `
-  --template-file ./bicep/storage.bicep ` `
+  --template-file ./bicep/storage.bicep `
   --parameters `
         location=$location `
         cycleCloudNetworkRGName=$cycleCloudNetworkRGName `
@@ -175,27 +181,33 @@ Write-Host -ForegroundColor Green "Create the custom role."
     --template-file ./Bicep/cyclecloudRole.bicep `
     --location $location
 
-Write-Host -ForegroundColor Green "Grant the role to the identity of the cyclecloud VM"
-$identityId=$(az resource list -n $cycleCloudVMName --query [*].identity.principalId --out tsv)
+$servicePrincipal = az ad sp create-for-rbac --name $cycleCloudServicePrincipalName --years 1 --role "Custom Role - CycleCloud system assigned identity" --scopes "/subscriptions/$cycleCloudSubscriptionID" | ConvertFrom-Json
 
-Write-Host -ForegroundColor Green "Identity Id: $identityId"
+# ---this section is probably no longer needed as it assume the VM identity is used..., but I will leave it here for now
+# Write-Host -ForegroundColor Green "Grant the role to the identity of the cyclecloud VM"
+# $CycleVMIdentityId=$(az resource list -n $cycleCloudVMName --query [*].identity.principalId --out tsv)
+# $identityId=$(az ad sp show --id $cycleCloudVMName --query objectId --out tsv)
 
+
+# Write-Host -ForegroundColor Green "Identity Id: $CycleVMIdentityId"
+<# 
 Write-Host -ForegroundColor Green "Assign the role to the identity"
 az role assignment create `
-    --role 'Custom Role - CycleCloud system assigned identity' `
-    --assignee-object-id $identityId `
-    --assignee-principal-type ServicePrincipal `
-    --scope "/subscriptions/$cycleCloudSubscriptionID"
+   --role 'Custom Role - CycleCloud system assigned identity' `
+   --assignee-object-id $CycleVMIdentityId `
+   --assignee-principal-type ServicePrincipal `
+   --scope "/subscriptions/$cycleCloudSubscriptionID"
+ #>
 
 Write-Host -ForegroundColor Green "Grant the identity access to the storage accounts"
 az role assignment create `
     --role 'Storage Blob Data Contributor' `
-    --assignee-object-id $identityId `
+    --assignee-object-id $servicePrincipal.appId `
     --assignee-principal-type ServicePrincipal `
     --scope "/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudVMRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudLockerStorageAccountName"
 az role assignment create `
     --role 'Storage Blob Data Contributor' `
-    --assignee-object-id $identityId `
+    --assignee-object-id $servicePrincipal.appId `
     --assignee-principal-type ServicePrincipal `
     --scope "/subscriptions/$cycleCloudSubscriptionID/resourceGroups/$cycleCloudStorageRGName/providers/Microsoft.Storage/storageAccounts/$cycleCloudNFSStorageAccountName"
 
@@ -206,7 +218,7 @@ az role assignment create `
 
 # Deploy the grafana
 
-
+# Link the grafana to the prometheus
 
 
 # WIP this is not correct / tested yet
@@ -215,3 +227,10 @@ az role assignment create `
 
 Write-Host -ForegroundColor Green "$(Get-Date -Format 'HH:mm:ss') Deployment complete take note of these values:"
 # Write-Host -ForegroundColor Cyan "Moneo managed identity: $cycleCloudVMName"
+Write-Host -ForegroundColor Cyan "Cyclecloud service principal: " $servicePrincipal.appId
+Write-Host -ForegroundColor Cyan "Cyclecloud service principal password: " $servicePrincipal.password
+Write-Host -ForegroundColor Cyan "Cyclecloud service principal tenant: " $servicePrincipal.tenant
+
+
+# Can I do something with this error, it seems a one time thing per subscription.. Low prio
+# The client 'f6821cb6-ad47-4d07-b73c-1a54509af107' with object id 'f6821cb6-ad47-4d07-b73c-1a54509af107' does not have authorization to perform action 'Microsoft.MarketplaceOrdering/offerTypes/publishers/offers/plans/agreements/write' over scope '/sub

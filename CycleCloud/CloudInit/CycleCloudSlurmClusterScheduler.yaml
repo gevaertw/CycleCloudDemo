@@ -1,9 +1,12 @@
 #cloud-config
 timezone: Europe/Brussels
 
-bootcmd:
+# scheduler node configuration for the CycleCloud Slurm Cluster
+
 # There is a key issue in the current Alma Linux images, https://github.com/Azure/cyclecloud-slurm/issues/214
-- rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
+# seems resolved now commented out for deletion later on..
+#bootcmd:
+#- rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
 
 #mounts:
 
@@ -12,6 +15,7 @@ packages:
 - jq
 - tmux
 - mysql
+- nano
 
 #write_files:
 
@@ -22,8 +26,8 @@ runcmd:
 # Mount the cyclenfs NFS share that sits on the storage accounts, make sure to replace the storage account name with the actual one.
 - mkdir -p /cyclenfs
 - chmod -R 755 /cyclenfs
-- mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436864.blob.core.windows.net:/nfscyclesa8168kt436864/cyclenfs  /cyclenfs
-# Configure & run Moneo monitor
+- mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436884.blob.core.windows.net:/nfscyclesa8168kt436884/cyclenfs  /cyclenfs
+# Configure & run Moneo monitor (keep this line last)
 - /cyclenfs/CycleCloudDemo/Installers/Moneo/moneoInstallLinux.sh
 
 

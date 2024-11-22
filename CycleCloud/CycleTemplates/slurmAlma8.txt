@@ -2,6 +2,7 @@
 ## Cluster Configuration File ##
 ################################
 # original file: https://raw.githubusercontent.com/Azure/cyclecloud-slurm/master/templates/slurm.txt
+# This file may or may not work with your specific version of cyclecloud, so best to get the latest version online and modify that one using the stuf below.  
 # modifications:
 #   Added Charmander
 #   Added GPU partition
@@ -9,8 +10,9 @@
 #   Set some default values differently
 
 
-#Define the sheduler name as seen in the Cyclecloud interface
-[cluster Slurm Almalinux 8]
+#Brew
+# Define the sheduler name as seen in the Cyclecloud interface
+[cluster Brew Slurm Almalinux 8]
 FormLayout = selectionpanel
 Category = Schedulers
 
@@ -23,7 +25,7 @@ Autoscale = $Autoscale
     Region = $Region
     KeyPairLocation = ~/.ssh/cyclecloud.pem
     Azure.Identities = $ManagedIdentity
-    ComputerNamePrefix = $ComputerNamePrefix
+    ComputerNamePrefix = $ComputerNamePrefix        #Brew
     
     # Slurm autoscaling supports both Terminate and Deallocate shutdown policies
     ShutdownPolicy = $configuration_slurm_shutdown_policy
@@ -215,8 +217,8 @@ Autoscale = $Autoscale
     Azure.MaxScalesetSize = $HPCMaxScalesetSize
     AdditionalClusterInitSpecs = $HPCClusterInitSpecs
     EnableNodeHealthChecks = $EnableNodeHealthChecks
-    tags.CostCenter = $tagCostCenter  #Custom tag for Azure cost center
-    tags.ProjectName = $tagProjectName  #Custom tag for internal project Name
+    tags.CostCenter = $tagCostCenter                    #Brew Custom tag for Azure cost center  
+    tags.ProjectName = $tagProjectName                  #Brew Custom tag for internal project Name
 
 
         [[[configuration]]]
@@ -229,8 +231,8 @@ Autoscale = $Autoscale
     MachineType = $GPUMachineType
     ImageName = $GPUImageName
     MaxCoreCount = $MaxGPUExecuteCoreCount
-    tags.CostCenter = $tagCostCenter  #Custom tag for Azure cost center
-    tags.ProjectName = $tagProjectName  #Custom tag for internal project Name
+    tags.CostCenter = $tagCostCenter                    #Brew Custom tag for Azure cost center
+    tags.ProjectName = $tagProjectName                  #Brew Custom tag for internal project Name
 
     Interruptible = $GPUUseLowPrio
     MaxPrice = $GPUSpotMaxPrice
@@ -247,8 +249,8 @@ Autoscale = $Autoscale
     MachineType = $HTCMachineType
     ImageName = $HTCImageName
     MaxCoreCount = $MaxHTCExecuteCoreCount
-    tags.CostCenter = $tagCostCenter  #Custom tag for Azure cost center
-    tags.ProjectName = $tagProjectName  #Custom tag for internal project Name
+    tags.CostCenter = $tagCostCenter                    #Brew Custom tag for Azure cost center
+    tags.ProjectName = $tagProjectName                  #Brew Custom tag for internal project Name
 
     Interruptible = $HTCUseLowPrio
     MaxPrice = $HTCSpotMaxPrice
@@ -265,8 +267,8 @@ Autoscale = $Autoscale
     MachineType = $DynamicMachineType
     ImageName = $DynamicImageName
     MaxCoreCount = $MaxDynamicExecuteCoreCount
-    tags.CostCenter = $tagCostCenter  #Custom tag for Azure cost center
-    tags.ProjectName = $tagProjectName  #Custom tag for internal project Name
+    tags.CostCenter = $tagCostCenter                    #Brew Custom tag for Azure cost center
+    tags.ProjectName = $tagProjectName                  #Brew Custom tag for internal project Name
 
     Interruptible = $DynamicUseLowPrio
     MaxPrice = $DynamicSpotMaxPrice
@@ -278,7 +280,7 @@ Autoscale = $Autoscale
         slurm.use_pcpu = false
 
 ################################################################################################################################################
-# GUI Components Page 1 Opening
+#Brew  GUI Components Page 1 Opening
 ################################################################################################################################################
 
 [parameters About]
@@ -289,7 +291,7 @@ Order = 1
         [[[parameter slurm]]]
         HideLabel = true
         Config.Plugin = pico.widget.HtmlTemplateWidget
-        Config.Template = '''<table role="presentation"><tr><td><img alt="Charmander, because we can" src="https://www.pngkey.com/png/full/37-377739_charmander-png.png" width="192" height="192"></td></tr><tr><td><p>Charmander added for fun<p>Spot options for hpc cluster added to template <p>Max price field added for spot hpc <p>Removed other example clusters for simplification <br> <p>Follow the instructions in the<a href="https://github.com/azure/cyclecloud-slurm/" target="_blank">README</a>for details on instructions on extending and configuring the Project for your environment.</p><br></td></tr><tr><td><p>Slurm is the most widely used workload manager in HPC, as the scheduler of choice for six of the top ten systems in the TOP500 and with market penetration of more than 70%. Slurm is an advanced, open-source scheduler designed to satisfy the demanding needs of high-performance computing (HPC), high-throughput computing (HTC), and artificial intelligence (AI).</p></td></tr><tr><td><h3>Commercial Support provided by SchedMD</h3></td></tr><tr><td><p>Get more from your HPC investment! SchedMD, the company behind Slurm development, can answer your Slurm questions and explain our options for consultation, training, support, and migration.</p><p><a href="https://www.schedmd.com/services.php">Contact SchedMD</a></p></td></tr></table><details><summary><b>View more details about Slurm?</b></summary><table role="presentation"><tr><td><h3>Slurm at a glance</h3></td></tr><tr><td><p>Slurm provides massive scalability and can easily manage performance requirements for small cluster, large cluster, and supercomputer needs. Slurm outperforms competitive schedulers with compute rates at:</p></td></tr><tr><td><ul><li>100K+ nodes/GPU</li><li>17M+ jobs per day</li><li>120M+ jobs per week</li></ul></td></tr><tr><td><br><p>Slurm’s plug-in based architecture enables optimization and control in scheduling operations to meet organizational priorities. With first class resource management for GPUs, Slurm allows users to request GPU resources alongside CPUs. This flexibility ensures that jobs are executed quickly and efficiently, while maximizing resource utilization.</p><br></td></tr><tr><td><p>Other Slurm features include:</p></td></tr><td><ul><li>NVIDIA GH200 support for AI, LLM, and ML environments</li><li>Advanced scheduling policies</li><li>Unique HPC, HTC, AI/ML workload expertise</li><li>Cloud bursting capabilities</li><li>Power saving capabilities, accounting, and reporting</li><li>Provided REST API daemon</li><li>Native support of containers</li><li>Tailored Slurm consulting and training available through SchedMD</li></ul></td></table></details>'''    
+        Config.Template = '''<table role="presentation"><tr><td style="background-color: blue;"><img alt="Lets brew this thing" src="https://www.cloudbrew.be/img/logo.png" height="192"></td></tr><tr><td><p>Charmander added for fun<p>Spot options for hpc cluster added to template <p>Max price field added for spot hpc <p>Removed other example clusters for simplification <br> <p>Follow the instructions in the<a href="https://github.com/azure/cyclecloud-slurm/" target="_blank">README</a>for details on instructions on extending and configuring the Project for your environment.</p><br></td></tr><tr><td><p>Slurm is the most widely used workload manager in HPC, as the scheduler of choice for six of the top ten systems in the TOP500 and with market penetration of more than 70%. Slurm is an advanced, open-source scheduler designed to satisfy the demanding needs of high-performance computing (HPC), high-throughput computing (HTC), and artificial intelligence (AI).</p></td></tr><tr><td><h3>Commercial Support provided by SchedMD</h3></td></tr><tr><td><p>Get more from your HPC investment! SchedMD, the company behind Slurm development, can answer your Slurm questions and explain our options for consultation, training, support, and migration.</p><p><a href="https://www.schedmd.com/services.php">Contact SchedMD</a></p></td></tr></table><details><summary><b>View more details about Slurm?</b></summary><table role="presentation"><tr><td><h3>Slurm at a glance</h3></td></tr><tr><td><p>Slurm provides massive scalability and can easily manage performance requirements for small cluster, large cluster, and supercomputer needs. Slurm outperforms competitive schedulers with compute rates at:</p></td></tr><tr><td><ul><li>100K+ nodes/GPU</li><li>17M+ jobs per day</li><li>120M+ jobs per week</li></ul></td></tr><tr><td><br><p>Slurm’s plug-in based architecture enables optimization and control in scheduling operations to meet organizational priorities. With first class resource management for GPUs, Slurm allows users to request GPU resources alongside CPUs. This flexibility ensures that jobs are executed quickly and efficiently, while maximizing resource utilization.</p><br></td></tr><tr><td><p>Other Slurm features include:</p></td></tr><td><ul><li>NVIDIA GH200 support for AI, LLM, and ML environments</li><li>Advanced scheduling policies</li><li>Unique HPC, HTC, AI/ML workload expertise</li><li>Cloud bursting capabilities</li><li>Power saving capabilities, accounting, and reporting</li><li>Provided REST API daemon</li><li>Native support of containers</li><li>Tailored Slurm consulting and training available through SchedMD</li></ul></td></table></details>'''    
 
 
 
@@ -298,6 +300,7 @@ Order = 1
 ################################################################################################################################################
 
 [parameters Required Settings]
+#Brew
 Order = 10
     [[parameters Azure Tagging]]
     Description = These tags are added to the Azure deployment.
@@ -824,7 +827,7 @@ Order = 20
     [[parameters Software]]
     Description = "Specify the scheduling software, and base OS installed on all nodes, and optionally the cluster-init and chef versions from your locker."
     Order = 10
-
+        #Brew
         [[[parameter NodeNameIsHostname]]]
         Label = Name As Hostname
         Description = Should the hostname match the nodename for execute nodes?  Deselect if your DNS is not Azure Vnet integrated.
@@ -927,7 +930,7 @@ Order = 20
 
         [[[parameter UsePublicNetwork]]]
         Label = Public Head Node
-        DefaultValue = false
+        DefaultValue = false                                #Brew
         ParameterType = Boolean
         Config.Label = Access scheduler node from the Internet
 

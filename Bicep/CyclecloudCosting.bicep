@@ -34,11 +34,15 @@ resource MySQLServer_R 'Microsoft.DBforMySQL/flexibleServers@2023-10-01-preview'
     administratorLogin: 'mysqladmin'
     administratorLoginPassword: adminPassword
     version: '5.7'
-    //		sslEnforcement: 'Enabled'
+    network: {
+      publicNetworkAccess: 'Disabled'
+    }
+
     storage: {
       storageSizeGB: 512
     }
     createMode: 'Default'
+    
   }
   sku: {
     name: costingDBskuName

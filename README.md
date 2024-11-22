@@ -60,7 +60,7 @@ Deploy a Cyclecloud cluster on Azure with additional components for simplified m
 
 
 # Post deployment tasks:
-- Log on to the management Windows 11 workstation and run the following commands:
+- Log on to the management Windows 11 workstation using the username & password entered in the CycleCloudParameters.json file and run the following commands:
 
 ```
 ssh-keygen
@@ -163,10 +163,7 @@ These steps are executed only once per deployment of a cyclecloud environment
 - Log on to the scheduler node using ssh
 - Run the commands in the script to prepare the environment for testing.  The script is in this repo, not on the server.
 - 
-```bash
-git clone https://github.com/gevaertw/CycleCloudDemo.git
-```
-- This will populate the NFS share with the required files for the tests and download all experiments to the NFS share and set all permissions.
+
 
 ## Run an experiment
 - From the management workstation, log on to the scheduler node using ssh
