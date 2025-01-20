@@ -18,10 +18,13 @@ packages:
 - python39
 - jq
 - tmux
+- at
 
 #write_files:
 
 runcmd:
+# start some services
+- systemctl start atd
 # Install the azNFS package
 - export AZNFS_NONINTERACTIVE_INSTALL=1
 - wget -O - -q https://github.com/Azure/AZNFS-mount/releases/latest/download/aznfs_install.sh | bash

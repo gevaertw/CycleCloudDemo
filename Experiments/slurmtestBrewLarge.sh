@@ -18,8 +18,7 @@ sbatch  --job-name=$JOBNAME \
     --output=$FULLOUTPUTPATH/%x_%j_out.txt \
     --error=$FULLOUTPUTPATH/%x_%j_err.txt \
     --cpus-per-task=1  \
-    --nodes=$MINNODES-$MAXNODES  \
-    --array=0-999 \
+    --array=0-999%20 \
     --partition=$PARTITIONNAME  \
     ./hpcjob05.sh
  

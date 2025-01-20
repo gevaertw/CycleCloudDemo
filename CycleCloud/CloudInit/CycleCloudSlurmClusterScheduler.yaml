@@ -3,23 +3,21 @@ timezone: Europe/Brussels
 
 # scheduler node configuration for the CycleCloud Slurm Cluster
 
-# There is a key issue in the current Alma Linux images, https://github.com/Azure/cyclecloud-slurm/issues/214
-# seems resolved now commented out for deletion later on..
-#bootcmd:
-#- rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
-
 #mounts:
 
 packages:
 - python39
 - jq
 - tmux
+- at
 - mysql
 - nano
 
 #write_files:
 
 runcmd:
+# start some services
+- systemctl start atd
 # Install the azNFS package
 - export AZNFS_NONINTERACTIVE_INSTALL=1
 - wget -O - -q https://github.com/Azure/AZNFS-mount/releases/latest/download/aznfs_install.sh | bash
