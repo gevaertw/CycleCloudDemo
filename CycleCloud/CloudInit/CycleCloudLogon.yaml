@@ -1,0 +1,29 @@
+#cloud-config
+bootcmd:
+# There is a key issue in the current Alma Linux images, https://github.com/Azure/cyclecloud-slurm/issues/214
+- rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
+- rpm --import https://packages.microsoft.com/yumrepos/vscode
+- rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+#mounts:
+
+packages:
+- python39
+- jq
+
+#write_files:
+
+runcmd:
+# Install the azNFS package
+- export AZNFS_NONINTERACTIVE_INSTALL=1
+- wget -O - -q https://github.com/Azure/AZNFS-mount/releases/latest/download/aznfs_install.sh | bash
+
+# Mount the cyclenfs NFS share that sits on the storage accounts, make sure to replace the storage account name with the actual one.
+- mkdir -p /cyclenfs
+- chmod -R 755 /cyclenfs
+- mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp nfscyclesa8168kt436864.blob.core.windows.net:/nfscyclesa8168kt436864/cyclenfs  /cyclenfs
+# Configure & run Moneo monitor
+- /cyclenfs/CycleCloudDemo/Installers/Moneo/moneoInstallLinux.sh
+# run other scripts here
+- /cyclenfs/software/scripts/guiInstall.sh
+
