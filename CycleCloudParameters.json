@@ -1,0 +1,119 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        
+        "baseName": {
+            "value": "ccpoc"
+        },
+        "location": {
+            "value": "swedencentral"
+        },
+        "cycleCloudServicePrincipalName": {
+            "value": "CycleCloudApp-sp"
+        },
+        "cycleCloudVMRGName": {
+            "value": "ccpoc-base-rg"
+        },
+        "cycleCloudNetworkRGName": {
+            "value": "ccpoc-net-rg"
+        },
+        "cycleCloudStorageRGName": {
+            "value": "ccpoc-storage-rg"
+        },
+        "cycleCloudCostingRGName": {
+            "value": "ccpoc-costing-rg"
+        },
+        "cycleCloudMonitoringRGName": {
+            "value": "ccpoc-monitoring-rg"
+        },
+        "cycleCloudVnetName": {
+            "value": "ccpoc-vNet"
+        },
+        "addressPrefixes": {
+            "value": "10.16.0.0/16"
+        },
+        "cycleCloudSubnetName": {
+            "value": "ccpoc-vNet-CycleCloud-sn"
+        },
+        "cyclecloudSubnetPrefix": {
+            "value": "10.16.0.0/24"
+        },
+        "storageSubnetName": {
+            "value": "ccpoc-vNet-Storage-sn"
+        },
+        "storageSubnetPrefix": {
+            "value": "10.16.1.0/24"
+        },
+        "bastionSubnetName": {
+            "value": "AzureBastionSubnet"
+        },
+        "bastionSubnetPrefix": {
+            "value": "10.16.2.0/24"
+        },
+        "HPCCluster01SubnetName": {
+            "value": "ccpoc-HPCCluster01-sn"
+        },
+        "HPCCluster01SubnetPrefix": {
+            "value": "10.16.11.0/24"
+        },
+        "HPCCluster02SubnetName": {
+            "value": "ccpoc-HPCCluster02-sn"
+        },
+        "HPCCluster02SubnetPrefix": {
+            "value": "10.16.12.0/24"
+        },
+        "HPCCluster03SubnetName": {
+            "value": "ccpoc-HPCCluster03-sn"
+        },
+        "HPCCluster03SubnetPrefix": {
+            "value": "10.16.13.0/24"
+        },
+        "HPCCluster04SubnetName": {
+            "value": "ccpoc-HPCCluster04-sn"
+        },
+        "HPCCluster04SubnetPrefix": {
+            "value": "10.16.14.0/24"
+        },
+        "cycleCloudVMName": {
+            "value": "ccpoc-Cycle-vm"
+        },
+        "cycleCloudVMSize": {
+            "value": "Standard_D4s_v5"
+        },
+        "mgmtVMName": {
+            "value": "ccpoc-mgmt-vm"
+        },
+        "cycleCloudLockerStorageAccountName": {
+            "value": "lockcyclesa8168kt436884"
+        },
+        "cycleCloudNFSStorageAccountName": {
+            "value": "nfscyclesa8168kt436884"
+        },
+        "StorageAccountExceptionIP": {
+            "value": "109.134.193.156"
+        },
+        "costingDBSeverName": {
+            "value": "ccpoc-dbsrv"
+        },
+        "costingDBName": {
+            "value": "ccpoc-costingdb"
+        },
+        "costingDBskuName": {
+            "value": "Standard_B1ms"
+        },
+        "costingDBskuTier": {
+            "value": "Burstable"
+        },
+        "monitoringUserAssignedIdentityName": {
+            "value": "moneo-identity"
+        },
+        "monitoringGrafanaName": {
+            "value": "ccpoc-grafana"
+        },
+        "monitoringPrometheusName": {
+            "value": "ccpoc-prometheus"
+        }
+
+    }
+}

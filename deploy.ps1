@@ -1,4 +1,20 @@
 ###############################################################################
+# NO LONGER MAINTAINED, see deployCyclecloud.sh for current bash script
+###############################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+###############################################################################
 # Check the parameters file for the correct values before running this script
 # See doc for more information on the parameters file
 ###############################################################################

@@ -7,6 +7,7 @@ param location string
 //param cycleCloudNetworkRGName string
 param cycleCloudVnetName string
 param addressPrefixes array
+//param addressPrefix string
 
 param cycleCloudSubnetName string
 param cyclecloudSubnetPrefix string
@@ -73,7 +74,9 @@ module nsgAny_m './nsg-any.bicep' = {
 }
 
 // create the vnet
-resource cycleCloudvNet_R 'Microsoft.Network/virtualNetworks@2023-04-01' = {
+
+/*
+resource cycleCloudvNet_R 'Microsoft.Network/virtualNetworks@2025-01-01' = {
   name: cycleCloudVnetName
   location: location
   dependsOn: [nsgBastion_m, nsgCycleCloud_m, nsgCycleCloudCluster_m, nsgCycleCloudStorage_m, nsgAny_m]
@@ -128,7 +131,6 @@ resource cycleCloudvNet_R 'Microsoft.Network/virtualNetworks@2023-04-01' = {
             id: bastionNSG_R.id
           }
         }
-        
       }
       {
         name: HPCCluster01SubnetName
@@ -202,6 +204,24 @@ resource cycleCloudvNet_R 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   }
 }
 
+*/
+
+//---------------
+module m_vnet 'br/public:avm/res/network/virtual-network:0.7.0' = {
+  name: 'm_vnet'
+  params: {
+    name: cycleCloudVnetName
+
+    addressPrefixes: addressPrefixes
+    location: location
+  }
+}
+
+output vnetId string = m_vnet.outputs.resourceId
+
+//----------------------------
+
+/*
 // not all is used, but it is a good way to get the id of the existing resources
 resource cycleCloudNSG_R 'Microsoft.Network/networkSecurityGroups@2023-04-01' existing = {
   name: cycleCloudNSGName
@@ -286,3 +306,6 @@ resource bastionHost_R 'Microsoft.Network/bastionHosts@2023-04-01' = {
     ]
   }
 }
+
+
+*/

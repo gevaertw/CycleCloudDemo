@@ -1,5 +1,5 @@
 # Warning
-Use at your own risk responsibility etc.  For POC purposes only, designed for functionality, not security.  Im not giving support, nor does my employer, unless I'm actualy on your project.  HPC can be expensive.  Watch your bill and 
+Use at your own risk responsibility etc.  For POC purposes only, designed for functionality, not security.  Im not giving support, nor does my employer, unless I'm actualy on your project.  HPC can be expensive.  Watch your bill...
 # What does this do? 
 Deploy a Cyclecloud cluster on Azure with additional components for simplified management and testing.
 # Known issue's
@@ -19,7 +19,7 @@ Deploy a Cyclecloud cluster on Azure with additional components for simplified m
 - Review the CycleCloudParameters.json file and adjust the settings to your needs.  Make sure change the default password for the CycleCloud user.
 - Have onwer rights on the Azure subscription you are gooing to deploy to.
 
-# Parameters file documentation
+# Parameters files documentation
 - cycleCloudSubscriptionID: The subscription ID where you want to deploy the resources
 - baseName: The base name for the resources, this will be used to create the resource group names and the VM names
 - location: The location where you want to deploy the resources
@@ -60,14 +60,13 @@ Deploy a Cyclecloud cluster on Azure with additional components for simplified m
 
 
 # Post deployment tasks:
-- Log on to the management Windows 11 workstation using the username & password entered in the CycleCloudParameters.json file and run the following commands:
+- Log on to the management Windows 11 workstation using the username & password entered in the CycleCloudParameters_secure.json file and run the following commands:
 
 ```
 ssh-keygen
 type .\.ssh\id_rsa.pub
 ```
-copy the public key, and enter it when asked during the first deploy of CycleCloud.
-
+- copy the public key, and enter it when asked during the first deploy of CycleCloud.
 - In the folder .ssh in your home directory, create a file called config with the following content:
 ```
 # Disable HostKey checking for servers which frequently change keys
@@ -75,7 +74,7 @@ Host *
     UserKnownHostsFile /dev/null
     StrictHostKeyChecking no
 ```
-- This will disable the host key checking for all servers, since VM's get constantly redeployed in this POC, the host signatures change all the time, and this will prevent the ssh client from asking if you trust the host, or block you if the signature has changed.
+- This will disable the host key checking for all servers, since VM's get constantly redeployed in this POC, the host signatures change all the time, and this will prevent the ssh client from asking if you trust the host, or block you if the signature has changed.  This is probably not a security best practice in general..
 
 ## CycleCloud setup
 - Open a browser and go to the CycleCloud server's IP address using http (not https) 
